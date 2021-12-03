@@ -1,7 +1,7 @@
 import {renderTemplate, RenderPosition} from './render.js';
 import {createNavigationTemplate} from './view/navigation.js';
 import {createTripInfoTemplate} from './view/trip-info';
-import {createFilterTemplate} from './view/filters.js';
+import {createFiltersTemplate} from './view/filters.js';
 import {createSortTemplate} from './view/sort.js';
 import {createEventsListTemplate} from './view/events-list';
 import {createEventsItemTemplate} from './view/events-item';
@@ -19,7 +19,7 @@ const tripEvents = pageMain.querySelector('.trip-events');
 
 renderTemplate(tripMain, RenderPosition.AFTERBEGIN, createTripInfoTemplate());
 renderTemplate(tripNavigation, RenderPosition.BEFOREEND, createNavigationTemplate());
-renderTemplate(tripFilters, RenderPosition.BEFOREEND, createFilterTemplate());
+renderTemplate(tripFilters, RenderPosition.BEFOREEND, createFiltersTemplate());
 renderTemplate(tripEvents, RenderPosition.BEFOREEND, createSortTemplate());
 renderTemplate(tripEvents, RenderPosition.BEFOREEND, createEventsListTemplate());
 
