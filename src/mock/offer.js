@@ -16,6 +16,24 @@ const offerTypes = {
       title: 'Rent a car'
     }
   ],
+  bus: [
+    {
+      name: 'pillow',
+      title: 'Put a pillow'
+    }
+  ],
+  train: [
+    {
+      name: 'linen',
+      title: 'Add bed linen'
+    }
+  ],
+  restaurant: [
+    {
+      name: 'table',
+      title: 'Book a table'
+    }
+  ],
   'check-in': [
     {
       name: 'breakfast',
@@ -51,10 +69,7 @@ const offerTypes = {
       name: 'lunch',
       title: 'Lunch in city'
     },
-  ],
-  bus: [],
-  train: [],
-  restaurant: [],
+  ]
 };
 
 const generateOffers = (type) => {
