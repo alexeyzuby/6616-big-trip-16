@@ -1,8 +1,8 @@
-import {renderTemplate, RenderPosition} from './render.js';
-import {createNavigationTemplate} from './view/navigation.js';
+import {renderTemplate, RenderPosition} from './render';
+import {createNavigationTemplate} from './view/navigation';
 import {createTripInfoTemplate} from './view/trip-info';
-import {createFiltersTemplate} from './view/filters.js';
-import {createSortTemplate} from './view/sort.js';
+import {createFiltersTemplate} from './view/filters';
+import {createSortTemplate} from './view/sort';
 import {createPointsListTemplate} from './view/points-list';
 import {createPointsItemTemplate} from './view/points-item';
 import {createPointTemplate} from './view/point';
@@ -31,6 +31,6 @@ const tripEventsList = tripEvents.querySelector('.trip-events__list');
 
 renderTemplate(tripEventsList, RenderPosition.BEFOREEND, createPointsItemTemplate(createPointFormTemplate(points[0])));
 
-for(let i = 0; i < POINTS_COUNT; i++) {
+for (let i = 0; i < POINTS_COUNT; i++) {
   renderTemplate(tripEventsList, RenderPosition.BEFOREEND, createPointsItemTemplate(createPointTemplate(points[i])));
 }

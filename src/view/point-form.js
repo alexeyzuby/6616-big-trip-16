@@ -34,9 +34,9 @@ const createDestinationPicturesTemplate = (destination) => {
          </div>
       </div>` : ''}`
     );
-  } else {
-    return '';
   }
+
+  return '';
 };
 
 const createOffersTemplate = (offers) => {
@@ -48,9 +48,9 @@ const createOffersTemplate = (offers) => {
         ${offers}
     </section>`
     );
-  } else {
-    return '';
   }
+
+  return '';
 };
 
 const createDestinationTemplate = (destination, pictures) => {
@@ -62,9 +62,9 @@ const createDestinationTemplate = (destination, pictures) => {
         ${pictures}
       </section>`
     );
-  } else {
-    return '';
   }
+
+  return '';
 };
 
 export const createPointFormTemplate = (points = {}) => {
