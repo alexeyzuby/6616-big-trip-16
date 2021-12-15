@@ -1,16 +1,19 @@
+import {createElement} from '../render.js';
 import dayjs from 'dayjs';
 
 const getPointDuration = (dateFrom, dateTo) => {
   const HOURS = 24;
   const MINUTES = 60;
+  const CHARACTERS_LENGTH = 2;
+  const PAD_VALUE = '0';
 
   const minutes = dayjs(dateTo).diff(dateFrom, 'minute');
   const hours = minutes ? Math.floor(minutes / MINUTES) : 0;
   const days = hours ? Math.floor(hours / HOURS) : 0;
 
-  const daysDuration = days ? `${String(days)}D` : '';
-  const hoursDuration = hours ? `${String(hours % HOURS)}H` : '';
-  const minutesDuration = minutes ? `${String(minutes % MINUTES)}M` : '';
+  const daysDuration = days ? `${String(days).padStart(CHARACTERS_LENGTH, PAD_VALUE)}D` : '';
+  const hoursDuration = hours ? `${String(hours % HOURS).padStart(CHARACTERS_LENGTH, PAD_VALUE)}H` : '';
+  const minutesDuration = minutes ? `${String(minutes % MINUTES).padStart(CHARACTERS_LENGTH, PAD_VALUE)}M` : '';
 
   return `${daysDuration} ${hoursDuration} ${minutesDuration}`.trim();
 };
@@ -29,14 +32,14 @@ const createOffersTemplate = (pointOffers) => {
   );
 };
 
-export const createPointTemplate = (points) => {
+const createPointTemplate = (points) => {
   const {dateFrom, dateTo, type, price, destination, pointOffers, isFavorite} = points;
 
   const pointDuration = getPointDuration(dateFrom, dateTo);
   const selectedOffers = createOffersTemplate(pointOffers);
 
   return (
-    `<div class="event">
+    `<li class="trip-events__item"><div class="event">
      <time class="event__date" datetime="${dayjs(dateFrom).format('YYYY-MM-DD')}">${dayjs(dateFrom).format('MMM DD')}</time>
      <div class="event__type">
        <img class="event__type-icon" width="42" height="42" src="img/icons/${type}.png" alt="Event type icon">
@@ -64,6 +67,31 @@ export const createPointTemplate = (points) => {
      <button class="event__rollup-btn" type="button">
        <span class="visually-hidden">Open event</span>
      </button>
-   </div>`
+   </div></li>`
   );
 };
+
+export default class PointView {
+  #element = null;
+  #point = null;
+
+  constructor(point) {
+    this.#point = point;
+  }
+
+  get element() {
+    if (!this.#element) {
+      this.#element = createElement(this.template);
+    }
+
+    return this.#element;
+  }
+
+  get template() {
+    return createPointTemplate(this.#point);
+  }
+
+  removeElement() {
+    this.#element = null;
+  }
+}
