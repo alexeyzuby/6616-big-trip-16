@@ -68,7 +68,7 @@ const offerTypes = {
     {
       name: 'lunch',
       title: 'Lunch in city'
-    },
+    }
   ]
 };
 
