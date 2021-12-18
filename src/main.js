@@ -18,10 +18,8 @@ const tripNavigation = tripMain.querySelector('.trip-controls__navigation');
 const tripFilters = tripMain.querySelector('.trip-controls__filters');
 const tripEvents = pageMain.querySelector('.trip-events');
 
-render(tripMain, new TripInfoView().element, RenderPosition.AFTERBEGIN);
 render(tripNavigation, new NavigationView().element, RenderPosition.BEFOREEND);
 render(tripFilters, new FiltersView().element, RenderPosition.BEFOREEND);
-render(tripEvents, new SortView().element, RenderPosition.BEFOREEND);
 
 const points = [...Array(POINTS_COUNT)].map((point, index) => generatePoint(index + 1));
 const pointsListComponent = new PointsListView();
@@ -66,6 +64,8 @@ const renderPoint = (pointsListElement, task) => {
 };
 
 if (points.length) {
+  render(tripMain, new TripInfoView().element, RenderPosition.AFTERBEGIN);
+  render(tripEvents, new SortView().element, RenderPosition.BEFOREEND);
   render(tripEvents, pointsListComponent.element, RenderPosition.BEFOREEND);
 
   for (let i = 0; i < POINTS_COUNT; i++) {
