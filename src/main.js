@@ -9,6 +9,7 @@ import NoPointsView from './view/no-points';
 import {render, RenderPosition} from './render';
 import {generatePoint} from './mock/point';
 
+const ESCAPE_KEY = 'Escape';
 const POINTS_COUNT = 10;
 
 const header = document.querySelector('.page-header');
@@ -37,7 +38,7 @@ const renderPoint = (pointsListElement, task) => {
   };
 
   const onEscKeyDown = (evt) => {
-    if (evt.key === 'Escape' || evt.key === 'Esc') {
+    if (evt.key === ESCAPE_KEY) {
       evt.preventDefault();
       replaceFormToPoint();
       document.removeEventListener('keydown', onEscKeyDown);
