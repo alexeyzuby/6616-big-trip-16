@@ -1,4 +1,4 @@
-import {getRandomInteger} from '../utils';
+import {getRandomInteger} from '../utils/common';
 import {generateDestination} from './destination';
 import {generateOffer} from './offer';
 import {POINT_TYPES} from '../const';

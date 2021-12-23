@@ -1,6 +1,6 @@
-import {firstLetterToUpperCase} from '../utils';
+import AbstractView from './abstract-view';
+import {firstLetterToUpperCase} from '../utils/common';
 import {POINT_TYPES, DESTINATION_NAMES} from '../const';
-import {createElement} from '../render.js';
 import dayjs from 'dayjs';
 
 const createTypesItemsTemplate = (id, types) => (
@@ -143,27 +143,35 @@ const createPointFormTemplate = (points = {}) => {
   );
 };
 
-export default class PointFormView {
-  #element = null;
+export default class PointFormView extends AbstractView {
   #point = null;
 
   constructor(point) {
+    super();
     this.#point = point;
-  }
-
-  get element() {
-    if (!this.#element) {
-      this.#element = createElement(this.template);
-    }
-
-    return this.#element;
   }
 
   get template() {
     return createPointFormTemplate(this.#point);
   }
 
-  removeElement() {
-    this.#element = null;
-  }
+  setRollupClickHandler = (callback) => {
+    this._callback.rollupClick = callback;
+    this.element.querySelector('.event__rollup-btn').addEventListener('click', this.#rollupClickHandler);
+  };
+
+  setFormSubmitHandler = (callback) => {
+    this._callback.formSubmit = callback;
+    this.element.querySelector('form').addEventListener('submit', this.#formSubmitHandler);
+  };
+
+  #rollupClickHandler = (evt) => {
+    evt.preventDefault();
+    this._callback.rollupClick();
+  };
+
+  #formSubmitHandler = (evt) => {
+    evt.preventDefault();
+    this._callback.formSubmit();
+  };
 }

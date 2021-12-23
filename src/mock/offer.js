@@ -1,4 +1,4 @@
-import {getRandomInteger} from '../utils';
+import {getRandomInteger} from '../utils/common';
 
 const OFFER_PRICE_MIN = 10;
 const OFFER_PRICE_MAX = 200;
