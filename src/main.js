@@ -50,8 +50,7 @@ const renderPoint = (pointsListElement, task) => {
     document.addEventListener('keydown', onEscKeyDown);
   });
 
-  pointFormComponent.setFormSubmitHandler((evt) => {
-    evt.preventDefault();
+  pointFormComponent.setFormSubmitHandler(() => {
     replaceFormToPoint();
     document.addEventListener('keydown', onEscKeyDown);
   });
