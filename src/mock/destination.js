@@ -1,4 +1,4 @@
-import {getRandomInteger} from '../utils';
+import {getRandomInteger} from '../utils/common';
 import {DESTINATION_NAMES} from '../const';
 
 const DESCRIPTION_LENGTH_MIN = 1;

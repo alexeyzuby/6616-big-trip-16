@@ -1,12 +1,12 @@
-import TripInfoView from './view/trip-info';
-import NavigationView from './view/navigation';
-import FiltersView from './view/filters';
-import SortView from './view/sort';
-import PointsListView from './view/points-list';
-import PointFormView from './view/point-form';
-import PointView from './view/point';
-import NoPointsView from './view/no-points';
-import {render, RenderPosition} from './render';
+import TripInfoView from './view/trip-info-view';
+import NavigationView from './view/navigation-view';
+import FiltersView from './view/filters-view';
+import SortView from './view/sort-view';
+import PointsListView from './view/points-list-view';
+import PointFormView from './view/point-form-view';
+import PointView from './view/point-view';
+import NoPointsView from './view/no-points-view';
+import {render, replace, RenderPosition} from './utils/render';
 import {generatePoint} from './mock/point';
 
 const ESCAPE_KEY = 'Escape';
@@ -19,8 +19,8 @@ const tripNavigation = tripMain.querySelector('.trip-controls__navigation');
 const tripFilters = tripMain.querySelector('.trip-controls__filters');
 const tripEvents = pageMain.querySelector('.trip-events');
 
-render(tripNavigation, new NavigationView().element, RenderPosition.BEFOREEND);
-render(tripFilters, new FiltersView().element, RenderPosition.BEFOREEND);
+render(tripNavigation, new NavigationView(), RenderPosition.BEFOREEND);
+render(tripFilters, new FiltersView(), RenderPosition.BEFOREEND);
 
 const points = [...Array(POINTS_COUNT)].map((point, index) => generatePoint(index + 1));
 const pointsListComponent = new PointsListView();
@@ -30,11 +30,11 @@ const renderPoint = (pointsListElement, task) => {
   const pointFormComponent = new PointFormView(task);
 
   const replacePointToForm = () => {
-    pointsListElement.replaceChild(pointFormComponent.element, pointComponent.element);
+    replace(pointFormComponent, pointComponent);
   };
 
   const replaceFormToPoint = () => {
-    pointsListElement.replaceChild(pointComponent.element, pointFormComponent.element);
+    replace(pointComponent, pointFormComponent);
   };
 
   const onEscKeyDown = (evt) => {
@@ -45,33 +45,32 @@ const renderPoint = (pointsListElement, task) => {
     }
   };
 
-  pointComponent.element.querySelector('.event__rollup-btn').addEventListener('click', () => {
+  pointComponent.setRollupClickHandler(() => {
     replacePointToForm();
     document.addEventListener('keydown', onEscKeyDown);
   });
 
-  pointFormComponent.element.querySelector('form').addEventListener('submit', (evt) => {
-    evt.preventDefault();
+  pointFormComponent.setFormSubmitHandler(() => {
     replaceFormToPoint();
     document.addEventListener('keydown', onEscKeyDown);
   });
 
-  pointFormComponent.element.querySelector('.event__rollup-btn').addEventListener('click', () => {
+  pointFormComponent.setRollupClickHandler(() => {
     replaceFormToPoint();
     document.addEventListener('keydown', onEscKeyDown);
   });
 
-  render(pointsListElement, pointComponent.element, RenderPosition.BEFOREEND);
+  render(pointsListElement, pointComponent, RenderPosition.BEFOREEND);
 };
 
 if (points.length) {
-  render(tripMain, new TripInfoView().element, RenderPosition.AFTERBEGIN);
-  render(tripEvents, new SortView().element, RenderPosition.BEFOREEND);
-  render(tripEvents, pointsListComponent.element, RenderPosition.BEFOREEND);
+  render(tripMain, new TripInfoView(), RenderPosition.AFTERBEGIN);
+  render(tripEvents, new SortView(), RenderPosition.BEFOREEND);
+  render(tripEvents, pointsListComponent, RenderPosition.BEFOREEND);
 
   for (let i = 0; i < POINTS_COUNT; i++) {
-    renderPoint(pointsListComponent.element, points[i]);
+    renderPoint(pointsListComponent, points[i]);
   }
 } else {
-  render(tripEvents, new NoPointsView().element, RenderPosition.BEFOREEND);
+  render(tripEvents, new NoPointsView(), RenderPosition.BEFOREEND);
 }
