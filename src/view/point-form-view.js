@@ -1,6 +1,6 @@
 import AbstractView from './abstract-view';
 import {firstLetterToUpperCase} from '../utils/common';
-import {POINT_TYPES, DESTINATION_NAMES} from '../const';
+import {POINT_TYPES, DESTINATION_NAMES} from '../utils/const';
 import dayjs from 'dayjs';
 
 const createTypesItemsTemplate = (id, types) => (
@@ -155,9 +155,9 @@ export default class PointFormView extends AbstractView {
     return createPointFormTemplate(this.#point);
   }
 
-  setArrowUpClickHandler = (callback) => {
-    this._callback.arrowUpClick = callback;
-    this.element.querySelector('.event__rollup-btn').addEventListener('click', this.#arrowUpClickHandler);
+  setFormCloseHandler = (callback) => {
+    this._callback.formClose = callback;
+    this.element.querySelector('.event__rollup-btn').addEventListener('click', this.#formCloseHandler);
   };
 
   setFormSubmitHandler = (callback) => {
@@ -165,9 +165,9 @@ export default class PointFormView extends AbstractView {
     this.element.querySelector('form').addEventListener('submit', this.#formSubmitHandler);
   };
 
-  #arrowUpClickHandler = (evt) => {
+  #formCloseHandler = (evt) => {
     evt.preventDefault();
-    this._callback.arrowUpClick();
+    this._callback.formClose();
   };
 
   #formSubmitHandler = (evt) => {
