@@ -1,7 +1,7 @@
 import {getRandomInteger} from '../utils/common';
 import {generateDestination} from './destination';
 import {generateOffer} from './offer';
-import {POINT_TYPES} from '../const';
+import {POINT_TYPES} from '../utils/const';
 import dayjs from 'dayjs';
 
 const POINT_PRICE_MIN = 10;

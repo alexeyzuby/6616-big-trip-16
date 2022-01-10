@@ -1,5 +1,5 @@
 import {getRandomInteger} from '../utils/common';
-import {DESTINATION_NAMES} from '../const';
+import {DESTINATION_NAMES} from '../utils/const';
 
 const DESCRIPTION_LENGTH_MIN = 1;
 const DESCRIPTION_LENGTH_MAX = 5;

@@ -35,9 +35,9 @@ export default class PointPresenter {
     this.#pointComponent = new PointView(this.#point);
     this.#pointFormComponent = new PointFormView(this.#point);
 
-    this.#pointComponent.setArrowDownClickHandler(this.#handleArrowDownClick);
+    this.#pointComponent.setFormOpenHandler(this.#handleFormOpen);
     this.#pointComponent.setFavoriteClickHandler(this.#handleFavoriteClick);
-    this.#pointFormComponent.setArrowUpClickHandler(this.#handleArrowUpClick);
+    this.#pointFormComponent.setFormCloseHandler(this.#handleFormClose);
     this.#pointFormComponent.setFormSubmitHandler(this.#handleFormSubmit);
 
     if (prevPointComponent === null || prevPointFormComponent === null) {
@@ -88,11 +88,11 @@ export default class PointPresenter {
     this.#mode = Mode.DEFAULT;
   };
 
-  #handleArrowDownClick = () => {
+  #handleFormOpen = () => {
     this.#replaceToForm();
   };
 
-  #handleArrowUpClick = () => {
+  #handleFormClose = () => {
     this.#replaceToPoint();
   };
 
