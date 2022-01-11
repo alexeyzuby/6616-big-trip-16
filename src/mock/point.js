@@ -28,7 +28,7 @@ export const generatePoint = (id) => {
     price: getRandomInteger(POINT_PRICE_MIN, POINT_PRICE_MAX),
     dateFrom: generateDate(),
     dateTo: generateDate(),
-    destination: generateDestination(id),
+    destination: generateDestination(),
     pointOffers: generateOffer(pointType),
   };
 };

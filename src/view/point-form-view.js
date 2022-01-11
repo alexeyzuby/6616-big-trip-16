@@ -1,7 +1,22 @@
-import AbstractView from './abstract-view';
+import SmartView from './smart-view';
+import {generateOffer} from '../mock/offer';
+import {generateDestination} from '../mock/destination';
 import {firstLetterToUpperCase} from '../utils/common';
-import {POINT_TYPES, DESTINATION_NAMES} from '../utils/const';
+import {DESTINATION_NAMES, POINT_TYPES} from '../utils/const';
 import dayjs from 'dayjs';
+
+const BLANK_TASK = {
+  id: 1,
+  dateFrom: dayjs(),
+  dateTo: dayjs(),
+  type: 'train',
+  price: '',
+  destination: '',
+  pointOffers: {
+    type: 'train',
+    offers: []
+  }
+};
 
 const createTypesItemsTemplate = (id, types) => (
   `${types.map((type) => `<div class="event__type-item">
@@ -44,10 +59,9 @@ const createOffersTemplate = (offers) => {
   if (offers) {
     return (
       `<section class="event__section event__section--offers">
-      <h3 class="event__section-title event__section-title--offers">Offers</h3>
-      <div class="event__available-offers">
-        ${offers}
-    </section>`
+         <h3 class="event__section-title event__section-title--offers">Offers</h3>
+         <div class="event__available-offers">${offers}</div>
+      </section>`
     );
   }
 
@@ -68,19 +82,8 @@ const createDestinationTemplate = (destination, pictures) => {
   return '';
 };
 
-const createPointFormTemplate = (points = {}) => {
-  const {
-    id = 1,
-    dateFrom = dayjs(),
-    dateTo = dayjs(),
-    type = 'train',
-    price = '',
-    destination = '',
-    pointOffers = {
-      type: 'train',
-      offers: []
-    }
-  } = points;
+const createPointFormTemplate = (data) => {
+  const {id, type, destination, dateFrom, dateTo, price, pointOffers} = data;
 
   const typesItems = createTypesItemsTemplate(id, POINT_TYPES);
   const destinationsOptions = createDestinationOptionsTemplate(DESTINATION_NAMES);
@@ -109,7 +112,7 @@ const createPointFormTemplate = (points = {}) => {
            </div>
            <div class="event__field-group event__field-group--destination">
              <label class="event__label event__type-output" for="event-destination-${id}">${type}</label>
-             <input class="event__input event__input--destination" id="event-destination-${id}" type="text" name="event-destination" value="${destination ? destination.name : ''}" list="destination-list-${id}">
+             <input id="event-destination-${id}" class="event__input event__input--destination" type="text" name="event-destination" value="${destination ? destination.name : ''}" list="destination-list-${id}">
              <datalist id="destination-list-${id}">
                ${destinationsOptions}
              </datalist>
@@ -143,17 +146,29 @@ const createPointFormTemplate = (points = {}) => {
   );
 };
 
-export default class PointFormView extends AbstractView {
-  #point = null;
-
-  constructor(point) {
+export default class PointFormView extends SmartView {
+  constructor(point = BLANK_TASK) {
     super();
-    this.#point = point;
+    this._data = PointFormView.parsePointToData(point);
+
+    this.#setInnerHandlers();
   }
 
   get template() {
-    return createPointFormTemplate(this.#point);
+    return createPointFormTemplate(this._data);
   }
+
+  reset = (point) => {
+    this.updateData(
+      PointFormView.parsePointToData(point),
+    );
+  }
+
+  restoreHandlers = () => {
+    this.#setInnerHandlers();
+    this.setFormCloseHandler(this._callback.formClose);
+    this.setFormSubmitHandler(this._callback.formSubmit);
+  };
 
   setFormCloseHandler = (callback) => {
     this._callback.formClose = callback;
@@ -165,6 +180,31 @@ export default class PointFormView extends AbstractView {
     this.element.querySelector('form').addEventListener('submit', this.#formSubmitHandler);
   };
 
+  #setInnerHandlers = () => {
+    this.element.querySelector('.event__type-group').addEventListener('change', this.#typeChangeHandler);
+    this.element.querySelector('.event__input--destination').addEventListener('change', this.#destinationNameChangeHandler);
+  };
+
+  #typeChangeHandler = (evt) => {
+    evt.preventDefault();
+    const selectedType = evt.target.value;
+
+    if (this._data.type === selectedType) {
+      return;
+    }
+
+    this.updateData({
+      type: selectedType,
+      pointOffers: generateOffer(selectedType),
+    });
+  };
+
+  #destinationNameChangeHandler = (evt) => {
+    this.updateData({
+      destination: generateDestination(evt.target.value),
+    });
+  };
+
   #formCloseHandler = (evt) => {
     evt.preventDefault();
     this._callback.formClose();
@@ -172,6 +212,9 @@ export default class PointFormView extends AbstractView {
 
   #formSubmitHandler = (evt) => {
     evt.preventDefault();
-    this._callback.formSubmit(this.#point);
+    this._callback.formSubmit(PointFormView.parseDataToPoint(this._data));
   };
+
+  static parsePointToData = (point) => ({...point});
+  static parseDataToPoint = (data) => ({...data});
 }

@@ -26,8 +26,8 @@ const generatePictures = () => {
   ));
 };
 
-export const generateDestination = () => ({
-  name: DESTINATION_NAMES[getRandomInteger(0, DESTINATION_NAMES.length - 1)],
+export const generateDestination = (name = null) => ({
+  name: name ?? DESTINATION_NAMES[getRandomInteger(0, DESTINATION_NAMES.length - 1)],
   description: generateDescription(),
   pictures: generatePictures()
 });
