@@ -203,7 +203,6 @@ export default class PointFormView extends SmartView {
 
   #setDatepicker = () => {
     const dateFields = this.element.querySelectorAll('.event__input--time');
-    const dateFrom = this.element.querySelector('.event__input--time[data-date-type="dateFrom"]').value;
 
     dateFields.forEach((input) => {
       const dateType = input.dataset.dateType;
@@ -212,7 +211,7 @@ export default class PointFormView extends SmartView {
         enableTime: true,
         dateFormat: 'd/m/Y H:i',
         defaultDate: this._data[dateType],
-        minDate: dateType === 'dateTo' ? dateFrom : null,
+        minDate: dateType === 'dateTo' ? this._data['dateFrom'] : null,
         onChange: this.#dateChangeHandler
       }));
     });
