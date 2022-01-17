@@ -4,6 +4,9 @@ import {generateDestination} from '../mock/destination';
 import {firstLetterToUpperCase} from '../utils/common';
 import {DESTINATION_NAMES, POINT_TYPES} from '../utils/const';
 import dayjs from 'dayjs';
+import flatpickr from 'flatpickr';
+
+import '../../node_modules/flatpickr/dist/flatpickr.min.css';
 
 const BLANK_TASK = {
   id: 1,
@@ -90,8 +93,8 @@ const createPointFormTemplate = (data) => {
   const offersSelectors = createOffersSelectorTemplate(id, pointOffers);
   const destinationPictures = createDestinationPicturesTemplate(destination);
 
-  const startTime = dayjs(dateFrom).format('DD/MM/YY HH:mm');
-  const endTime = dayjs(dateTo).format('DD/MM/YY HH:mm');
+  const startTime = dayjs(dateFrom).format('DD/MM/YYYY HH:mm');
+  const endTime = dayjs(dateTo).format('DD/MM/YYYY HH:mm');
 
   return (
     `<li class="trip-events__item">
@@ -119,10 +122,10 @@ const createPointFormTemplate = (data) => {
            </div>
            <div class="event__field-group  event__field-group--time">
              <label class="visually-hidden" for="event-start-time-${id}">From</label>
-             <input class="event__input event__input--time" id="event-start-time-${id}" type="text" name="event-start-time" value="${startTime}">
+             <input class="event__input event__input--time" id="event-start-time-${id}" type="text" name="event-start-time" value="${startTime}" data-date-type="dateFrom">
              &mdash;
              <label class="visually-hidden" for="event-end-time-${id}">To</label>
-             <input class="event__input event__input--time" id="event-end-time-${id}" type="text" name="event-end-time" value="${endTime}">
+             <input class="event__input event__input--time" id="event-end-time-${id}" type="text" name="event-end-time" value="${endTime}" data-date-type="dateTo">
            </div>
            <div class="event__field-group event__field-group--price">
              <label class="event__label" for="event-price-${id}">
@@ -147,25 +150,38 @@ const createPointFormTemplate = (data) => {
 };
 
 export default class PointFormView extends SmartView {
+  #datepicker = new Map;
+
   constructor(point = BLANK_TASK) {
     super();
     this._data = PointFormView.parsePointToData(point);
 
     this.#setInnerHandlers();
+    this.#setDatepicker();
   }
 
   get template() {
     return createPointFormTemplate(this._data);
   }
 
+  removeElement = () => {
+    super.removeElement();
+
+    if (this.#datepicker.size) {
+      this.#datepicker.forEach((datepicker) => datepicker.destroy());
+      this.#datepicker.clear();
+    }
+  };
+
   reset = (point) => {
     this.updateData(
       PointFormView.parsePointToData(point),
     );
-  }
+  };
 
   restoreHandlers = () => {
     this.#setInnerHandlers();
+    this.#setDatepicker();
     this.setFormCloseHandler(this._callback.formClose);
     this.setFormSubmitHandler(this._callback.formSubmit);
   };
@@ -183,6 +199,29 @@ export default class PointFormView extends SmartView {
   #setInnerHandlers = () => {
     this.element.querySelector('.event__type-group').addEventListener('change', this.#typeChangeHandler);
     this.element.querySelector('.event__input--destination').addEventListener('change', this.#destinationNameChangeHandler);
+  };
+
+  #setDatepicker = () => {
+    const dateFields = this.element.querySelectorAll('.event__input--time');
+
+    dateFields.forEach((input) => {
+      const dateType = input.dataset.dateType;
+
+      this.#datepicker.set(dateType, flatpickr(input, {
+        enableTime: true,
+        time_24hr: true, // eslint-disable-line camelcase
+        dateFormat: 'd/m/Y H:i',
+        defaultDate: this._data[dateType],
+        minDate: dateType === 'dateTo' ? this._data['dateFrom'] : null,
+        onChange: this.#dateChangeHandler
+      }));
+    });
+  };
+
+  #dateChangeHandler = ([userDate], dateStr, instance) => {
+    this.updateData({
+      [instance.element.dataset.dateType]: userDate,
+    });
   };
 
   #typeChangeHandler = (evt) => {
