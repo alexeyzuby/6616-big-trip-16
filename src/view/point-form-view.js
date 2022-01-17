@@ -209,6 +209,7 @@ export default class PointFormView extends SmartView {
 
       this.#datepicker.set(dateType, flatpickr(input, {
         enableTime: true,
+        time_24hr: true, // eslint-disable-line camelcase
         dateFormat: 'd/m/Y H:i',
         defaultDate: this._data[dateType],
         minDate: dateType === 'dateTo' ? this._data['dateFrom'] : null,
