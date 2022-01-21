@@ -15,6 +15,7 @@ export default class TripPresenter {
   #navigationContainer = null;
   #filtersContainer = null;
   #pointsListContainer = null;
+  #pointsModel = null;
 
   #tripInfoComponent = new TripInfoView();
   #navigationComponent = new NavigationView();
@@ -28,11 +29,16 @@ export default class TripPresenter {
   #currentSortType = SortType.DEFAULT;
   #sourcedPoints = [];
 
-  constructor(tripMainContainer, pointsListContainer, navigationContainer, filtersContainer) {
+  constructor(tripMainContainer, pointsListContainer, navigationContainer, filtersContainer, pointsModel) {
     this.#tripMainContainer = tripMainContainer;
     this.#pointsListContainer = pointsListContainer;
     this.#navigationContainer = navigationContainer;
     this.#filtersContainer = filtersContainer;
+    this.#pointsModel = pointsModel;
+  }
+
+  get points() {
+    return this.#pointsModel.points;
   }
 
   init = (points) => {
