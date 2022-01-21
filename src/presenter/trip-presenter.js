@@ -6,8 +6,7 @@ import SortView from '../view/sort-view';
 import PointsListView from '../view/points-list-view';
 import NoPointsView from '../view/no-points-view';
 import {render, RenderPosition} from '../utils/render';
-import {sortByTime, sortByPrice} from '../utils/point';
-import {updateItem} from '../utils/common.js';
+import {sortByTime, sortByPrice, sortByDate} from '../utils/point';
 import {SortType} from '../utils/const';
 
 export default class TripPresenter {
@@ -24,28 +23,31 @@ export default class TripPresenter {
   #pointsListComponent = new PointsListView();
   #noPointsComponent = new NoPointsView();
 
-  #points = [];
   #pointPresenter = new Map();
   #currentSortType = SortType.DEFAULT;
-  #sourcedPoints = [];
 
-  constructor(tripMainContainer, pointsListContainer, navigationContainer, filtersContainer, pointsModel) {
+  constructor(tripMainContainer, navigationContainer, filtersContainer, pointsListContainer, pointsModel) {
     this.#tripMainContainer = tripMainContainer;
-    this.#pointsListContainer = pointsListContainer;
     this.#navigationContainer = navigationContainer;
     this.#filtersContainer = filtersContainer;
+    this.#pointsListContainer = pointsListContainer;
     this.#pointsModel = pointsModel;
   }
 
   get points() {
-    return this.#pointsModel.points;
+    switch (this.#currentSortType) {
+      case SortType.TIME:
+        return [...this.#pointsModel.points].sort(sortByTime);
+      case SortType.PRICE:
+        return [...this.#pointsModel.points].sort(sortByPrice);
+    }
+
+    return [...this.#pointsModel.points].sort(sortByDate);
   }
 
-  init = (points) => {
-    this.#points = [...points];
-    this.#sourcedPoints = [...points];
+  init = () => {
     this.#renderControls();
-    (this.#points.length ? this.#renderPointsList : this.#renderNoPoints)();
+    (this.points.length ? this.#renderPointsList : this.#renderNoPoints)();
   };
 
   #handleModeChange = () => {
@@ -53,8 +55,6 @@ export default class TripPresenter {
   };
 
   #handlePointChange = (updatedPoint) => {
-    this.#points = updateItem(this.#points, updatedPoint);
-    this.#sourcedPoints = updateItem(this.#sourcedPoints, updatedPoint);
     this.#pointPresenter.get(updatedPoint.id).init(updatedPoint);
   };
 
@@ -63,24 +63,9 @@ export default class TripPresenter {
       return;
     }
 
-    this.#sortPoints(sortType);
+    this.#currentSortType = sortType;
     this.#clearPoints();
     this.#renderPoints();
-  };
-
-  #sortPoints = (sortType) => {
-    switch (sortType) {
-      case SortType.TIME:
-        this.#points.sort(sortByTime);
-        break;
-      case SortType.PRICE:
-        this.#points.sort(sortByPrice);
-        break;
-      default:
-        this.#points = [...this.#sourcedPoints];
-    }
-
-    this.#currentSortType = sortType;
   };
 
   #renderControls = () => {
@@ -100,7 +85,7 @@ export default class TripPresenter {
   };
 
   #renderPoints = () => {
-    this.#points.forEach((point) => {
+    this.points.forEach((point) => {
       this.#renderPoint(point);
     });
   };
