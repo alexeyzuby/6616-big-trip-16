@@ -184,6 +184,7 @@ export default class PointFormView extends SmartView {
     this.#setDatepicker();
     this.setFormCloseHandler(this._callback.formClose);
     this.setFormSubmitHandler(this._callback.formSubmit);
+    this.setDeleteClickHandler(this._callback.deleteClick);
   };
 
   setFormCloseHandler = (callback) => {
@@ -194,6 +195,11 @@ export default class PointFormView extends SmartView {
   setFormSubmitHandler = (callback) => {
     this._callback.formSubmit = callback;
     this.element.querySelector('form').addEventListener('submit', this.#formSubmitHandler);
+  };
+
+  setDeleteClickHandler = (callback) => {
+    this._callback.deleteClick = callback;
+    this.element.querySelector('.event__reset-btn').addEventListener('click', this.#formDeleteClickHandler);
   };
 
   #setInnerHandlers = () => {
@@ -252,6 +258,11 @@ export default class PointFormView extends SmartView {
   #formSubmitHandler = (evt) => {
     evt.preventDefault();
     this._callback.formSubmit(PointFormView.parseDataToPoint(this._data));
+  };
+
+  #formDeleteClickHandler = (evt) => {
+    evt.preventDefault();
+    this._callback.deleteClick(PointFormView.parseDataToPoint(this._data));
   };
 
   static parsePointToData = (point) => ({...point});
