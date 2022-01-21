@@ -1,6 +1,7 @@
 import PointView from '../view/point-view';
 import PointFormView from '../view/point-form-view';
 import {render, replace, remove, RenderPosition} from '../utils/render';
+import {UserAction, UpdateType} from '../utils/const';
 
 const ESCAPE_KEY = 'Escape';
 
@@ -100,11 +101,19 @@ export default class PointPresenter {
   };
 
   #handleFavoriteClick = () => {
-    this.#changeData({...this.#point, isFavorite: !this.#point.isFavorite});
+    this.#changeData(
+      UserAction.UPDATE_POINT,
+      UpdateType.PATCH,
+      {...this.#point, isFavorite: !this.#point.isFavorite}
+    );
   };
 
-  #handleFormSubmit = () => {
-    this.#pointFormComponent.reset(this.#point);
+  #handleFormSubmit = (update) => {
+    this.#changeData(
+      UserAction.UPDATE_POINT,
+      UpdateType.MINOR,
+      update,
+    );
     this.#replaceToPoint();
   };
 }
