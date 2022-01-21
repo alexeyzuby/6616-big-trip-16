@@ -1,55 +1,59 @@
 import PointPresenter from './point-presenter';
 import TripInfoView from '../view/trip-info-view';
 import NavigationView from '../view/navigation-view';
-import FiltersView from '../view/filters-view';
 import SortView from '../view/sort-view';
 import PointsListView from '../view/points-list-view';
 import NoPointsView from '../view/no-points-view';
 import {render, remove, RenderPosition} from '../utils/render';
 import {sortByTime, sortByPrice, sortByDate} from '../utils/point';
-import {SortType, UserAction, UpdateType} from '../utils/const';
+import {SortType, FilterType, UserAction, UpdateType} from '../utils/const';
+import {filters} from '../utils/filters';
 
 export default class TripPresenter {
   #tripMainContainer = null;
   #navigationContainer = null;
-  #filtersContainer = null;
   #pointsListContainer = null;
   #noPointsComponent = null;
   #sortComponent = null;
   #pointsModel = null;
+  #filtersModel = null;
 
   #tripInfoComponent = new TripInfoView();
   #navigationComponent = new NavigationView();
-  #filtersComponent = new FiltersView();
   #pointsListComponent = new PointsListView();
 
   #pointPresenter = new Map();
   #currentSortType = SortType.DEFAULT;
+  #filterType = FilterType.EVERYTHING;
 
-  constructor(tripMainContainer, navigationContainer, filtersContainer, pointsListContainer, pointsModel) {
+  constructor(tripMainContainer, navigationContainer, pointsListContainer, pointsModel, filtersModel) {
     this.#tripMainContainer = tripMainContainer;
     this.#navigationContainer = navigationContainer;
-    this.#filtersContainer = filtersContainer;
     this.#pointsListContainer = pointsListContainer;
     this.#pointsModel = pointsModel;
+    this.#filtersModel = filtersModel;
 
     this.#pointsModel.addObserver(this.#handleModelEvent);
+    this.#filtersModel.addObserver(this.#handleModelEvent);
   }
 
   get points() {
+    this.#filterType = this.#filtersModel.filter;
+    const points = this.#pointsModel.points;
+    const filteredPoints = filters[this.#filterType](points);
+
     switch (this.#currentSortType) {
       case SortType.TIME:
-        return [...this.#pointsModel.points].sort(sortByTime);
+        return filteredPoints.sort(sortByTime);
       case SortType.PRICE:
-        return [...this.#pointsModel.points].sort(sortByPrice);
+        return filteredPoints.sort(sortByPrice);
     }
 
-    return [...this.#pointsModel.points].sort(sortByDate);
+    return filteredPoints.sort(sortByDate);
   }
 
   init = () => {
     render(this.#navigationContainer, this.#navigationComponent, RenderPosition.BEFOREEND);
-    render(this.#filtersContainer, this.#filtersComponent, RenderPosition.BEFOREEND);
 
     this.#renderTrip();
   };
@@ -119,7 +123,7 @@ export default class TripPresenter {
   };
 
   #renderNoPoints = () => {
-    this.#noPointsComponent = new NoPointsView();
+    this.#noPointsComponent = new NoPointsView(this.#filterType);
     render(this.#pointsListContainer, this.#noPointsComponent, RenderPosition.BEFOREEND);
   };
 
