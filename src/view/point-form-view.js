@@ -3,14 +3,13 @@ import {generateOffer} from '../mock/offer';
 import {generateDestination} from '../mock/destination';
 import {firstLetterToUpperCase} from '../utils/common';
 import {DESTINATION_NAMES, POINT_TYPES} from '../utils/const';
-import {nanoid} from 'nanoid';
 import dayjs from 'dayjs';
 import flatpickr from 'flatpickr';
 
 import '../../node_modules/flatpickr/dist/flatpickr.min.css';
 
 const BLANK_POINT = {
-  id: nanoid(),
+  id: null,
   dateFrom: dayjs().toDate(),
   dateTo: dayjs().toDate(),
   type: POINT_TYPES[0],
@@ -83,7 +82,7 @@ const createDestinationTemplate = (destination, pictures) => {
   return '';
 };
 
-const createPointFormTemplate = (data) => {
+const createPointFormTemplate = (data, isNew) => {
   const {id, type, destination, dateFrom, dateTo, price, pointOffers} = data;
 
   const typesItems = createTypesItemsTemplate(id, POINT_TYPES);
@@ -134,9 +133,9 @@ const createPointFormTemplate = (data) => {
            </div>
            <button class="event__save-btn btn btn--blue" type="submit">Save</button>
            <button class="event__reset-btn" type="reset">Delete</button>
-           <button class="event__rollup-btn" type="button">
+           ${isNew ? '' : `<button class="event__rollup-btn" type="button">
              <span class="visually-hidden">Open event</span>
-           </button>
+           </button>`}
          </header>
          <section class="event__details">
            ${createOffersTemplate(offersSelectors)}
@@ -149,17 +148,19 @@ const createPointFormTemplate = (data) => {
 
 export default class PointFormView extends SmartView {
   #datepicker = new Map;
+  #isNew = false;
 
   constructor(point = BLANK_POINT) {
     super();
     this._data = PointFormView.parsePointToData(point);
+    this.#isNew = point === BLANK_POINT;
 
     this.#setInnerHandlers();
     this.#setDatepicker();
   }
 
   get template() {
-    return createPointFormTemplate(this._data);
+    return createPointFormTemplate(this._data, this.#isNew);
   }
 
   removeElement = () => {
@@ -180,7 +181,11 @@ export default class PointFormView extends SmartView {
   restoreHandlers = () => {
     this.#setInnerHandlers();
     this.#setDatepicker();
-    this.setFormCloseHandler(this._callback.formClose);
+
+    if(!this.#isNew) {
+      this.setFormCloseHandler(this._callback.formClose);
+    }
+
     this.setFormSubmitHandler(this._callback.formSubmit);
     this.setDeleteClickHandler(this._callback.deleteClick);
   };
@@ -205,7 +210,7 @@ export default class PointFormView extends SmartView {
     this.element.querySelector('.event__input--destination').addEventListener('input', this.#destinationNameChangeHandler);
     this.element.querySelector('.event__input--price').addEventListener('input', this.#priceChangeHandler);
 
-    if(this._data.pointOffers.offers.length > 0) {
+    if (this._data.pointOffers.offers.length > 0) {
       this.element.querySelector('.event__available-offers').addEventListener('change', this.#offerChangeHandler);
     }
   };
@@ -269,13 +274,13 @@ export default class PointFormView extends SmartView {
   };
 
   #offerChangeHandler = (evt) => {
-    const {offers} = this._data.pointOffers;
+    const newOffers = this._data.pointOffers.offers.map((offer) => ({...offer}));
 
-    const currentOffer = offers.find((offer) => offer.name === evt.target.dataset.offerName);
+    const currentOffer = newOffers.find((offer) => offer.name === evt.target.dataset.offerName);
     currentOffer.isChecked = evt.target.checked;
 
     this.updateData({
-      pointOffers: {...this._data.pointOffers, currentOffer: currentOffer}
+      pointOffers: {...this._data.pointOffers, offers: newOffers}
     }, true);
   };
 

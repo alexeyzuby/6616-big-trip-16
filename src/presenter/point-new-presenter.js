@@ -1,15 +1,18 @@
 import PointFormView from '../view/point-form-view';
 import {render, remove, RenderPosition} from '../utils/render';
 import {UserAction, UpdateType} from '../utils/const';
+import {nanoid} from 'nanoid';
 
 export default class PointNewPresenter {
   #pointsListContainer = null;
   #changeData = null;
+  #onDeleteClick = null;
   #pointFormComponent = null;
 
-  constructor(pointsListContainer, changeData) {
+  constructor(pointsListContainer, changeData, onDeleteClick) {
     this.#pointsListContainer = pointsListContainer;
     this.#changeData = changeData;
+    this.#onDeleteClick = onDeleteClick;
   }
 
   init = () => {
@@ -24,7 +27,7 @@ export default class PointNewPresenter {
     render(this.#pointsListContainer, this.#pointFormComponent, RenderPosition.AFTERBEGIN);
 
     document.addEventListener('keydown', this.#escKeyDownHandler);
-  }
+  };
 
   destroy = () => {
     if (this.#pointFormComponent === null) {
@@ -35,7 +38,7 @@ export default class PointNewPresenter {
     this.#pointFormComponent = null;
 
     document.removeEventListener('keydown', this.#escKeyDownHandler);
-  }
+  };
 
   #escKeyDownHandler = (evt) => {
     if (evt.key === 'Escape') {
@@ -48,12 +51,13 @@ export default class PointNewPresenter {
     this.#changeData(
       UserAction.ADD_POINT,
       UpdateType.MINOR,
-      {...point},
+      {...point, id: nanoid()},
     );
     this.destroy();
-  }
+  };
 
   #handleDeleteClick = () => {
     this.destroy();
-  }
+    this.#onDeleteClick();
+  };
 }
