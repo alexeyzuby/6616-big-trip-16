@@ -1,4 +1,5 @@
 import PointPresenter from './point-presenter';
+import PointNewPresenter from './point-new-presenter';
 import TripInfoView from '../view/trip-info-view';
 import NavigationView from '../view/navigation-view';
 import SortView from '../view/sort-view';
@@ -23,6 +24,7 @@ export default class TripPresenter {
   #pointsListComponent = new PointsListView();
 
   #pointPresenter = new Map();
+  #pointNewPresenter = null;
   #currentSortType = SortType.DEFAULT;
   #filterType = FilterType.EVERYTHING;
 
@@ -32,6 +34,8 @@ export default class TripPresenter {
     this.#pointsListContainer = pointsListContainer;
     this.#pointsModel = pointsModel;
     this.#filtersModel = filtersModel;
+
+    this.#pointNewPresenter = new PointNewPresenter(this.#pointsListComponent, this.#handleViewAction);
 
     this.#pointsModel.addObserver(this.#handleModelEvent);
     this.#filtersModel.addObserver(this.#handleModelEvent);
@@ -56,6 +60,12 @@ export default class TripPresenter {
     render(this.#navigationContainer, this.#navigationComponent, RenderPosition.BEFOREEND);
 
     this.#renderTrip();
+  };
+
+  createPoint = () => {
+    this.#currentSortType = SortType.DEFAULT;
+    this.#filtersModel.setFilter(UpdateType.MAJOR, FilterType.EVERYTHING);
+    this.#pointNewPresenter.init();
   };
 
   #handleViewAction = (actionType, updateType, update) => {
@@ -89,6 +99,7 @@ export default class TripPresenter {
   };
 
   #handleModeChange = () => {
+    this.#pointNewPresenter.destroy();
     this.#pointPresenter.forEach((presenter) => presenter.resetView());
   };
 
@@ -104,7 +115,7 @@ export default class TripPresenter {
 
   #renderTripInfo = () => {
     render(this.#tripMainContainer, this.#tripInfoComponent, RenderPosition.AFTERBEGIN);
-  }
+  };
 
   #renderSort = () => {
     this.#sortComponent = new SortView(this.#currentSortType);
@@ -132,6 +143,7 @@ export default class TripPresenter {
   };
 
   #clearTrip = ({resetSortType = false} = {}) => {
+    this.#pointNewPresenter.destroy();
     this.#pointPresenter.forEach((presenter) => presenter.destroy());
     this.#pointPresenter.clear();
 

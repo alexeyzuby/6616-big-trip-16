@@ -3,22 +3,20 @@ import {generateOffer} from '../mock/offer';
 import {generateDestination} from '../mock/destination';
 import {firstLetterToUpperCase} from '../utils/common';
 import {DESTINATION_NAMES, POINT_TYPES} from '../utils/const';
+import {nanoid} from 'nanoid';
 import dayjs from 'dayjs';
 import flatpickr from 'flatpickr';
 
 import '../../node_modules/flatpickr/dist/flatpickr.min.css';
 
 const BLANK_POINT = {
-  id: 1,
-  dateFrom: dayjs(),
-  dateTo: dayjs(),
-  type: 'train',
-  price: '',
-  destination: '',
-  pointOffers: {
-    type: 'train',
-    offers: []
-  }
+  id: nanoid(),
+  dateFrom: dayjs().toDate(),
+  dateTo: dayjs().toDate(),
+  type: POINT_TYPES[0],
+  price: 0,
+  destination: generateDestination(),
+  pointOffers: generateOffer(POINT_TYPES[0])
 };
 
 const createTypesItemsTemplate = (id, types) => (
@@ -206,7 +204,10 @@ export default class PointFormView extends SmartView {
     this.element.querySelector('.event__type-group').addEventListener('change', this.#typeChangeHandler);
     this.element.querySelector('.event__input--destination').addEventListener('input', this.#destinationNameChangeHandler);
     this.element.querySelector('.event__input--price').addEventListener('input', this.#priceChangeHandler);
-    this.element.querySelector('.event__available-offers').addEventListener('change', this.#offerChangeHandler);
+
+    if(this._data.pointOffers.offers.length > 0) {
+      this.element.querySelector('.event__available-offers').addEventListener('change', this.#offerChangeHandler);
+    }
   };
 
   #setDatepicker = () => {
