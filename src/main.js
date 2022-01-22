@@ -17,6 +17,7 @@ const tripMain = document.querySelector('.trip-main');
 const tripEvents = document.querySelector('.trip-events');
 const tripNavigation = tripMain.querySelector('.trip-controls__navigation');
 const tripFilters = tripMain.querySelector('.trip-controls__filters');
+const tripAddButton = tripMain.querySelector('.trip-main__event-add-btn');
 
 const filtersPresenter = new FiltersPresenter(tripFilters, filtersModel);
 const tripPresenter = new TripPresenter(tripMain, tripNavigation, tripEvents, pointsModel, filtersModel);
@@ -24,7 +25,7 @@ const tripPresenter = new TripPresenter(tripMain, tripNavigation, tripEvents, po
 filtersPresenter.init();
 tripPresenter.init();
 
-document.querySelector('.trip-main__event-add-btn').addEventListener('click', (evt) => {
+tripAddButton.addEventListener('click', (evt) => {
   evt.preventDefault();
   tripPresenter.createPoint();
 });

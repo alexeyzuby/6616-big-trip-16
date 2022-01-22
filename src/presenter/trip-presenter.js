@@ -25,7 +25,7 @@ export default class TripPresenter {
 
   #pointPresenter = new Map();
   #pointNewPresenter = null;
-  #currentSortType = SortType.DEFAULT;
+  #currentSortType = SortType.DAY.type;
   #filterType = FilterType.EVERYTHING;
 
   constructor(tripMainContainer, navigationContainer, pointsListContainer, pointsModel, filtersModel) {
@@ -47,9 +47,9 @@ export default class TripPresenter {
     const filteredPoints = filters[this.#filterType](points);
 
     switch (this.#currentSortType) {
-      case SortType.TIME:
+      case SortType.TIME.type:
         return filteredPoints.sort(sortByTime);
-      case SortType.PRICE:
+      case SortType.PRICE.type:
         return filteredPoints.sort(sortByPrice);
     }
 
@@ -63,7 +63,7 @@ export default class TripPresenter {
   };
 
   createPoint = () => {
-    this.#currentSortType = SortType.DEFAULT;
+    this.#currentSortType = SortType.DAY.type;
     this.#filtersModel.setFilter(UpdateType.MAJOR, FilterType.EVERYTHING);
 
     if (this.#noPointsComponent) {
@@ -171,7 +171,7 @@ export default class TripPresenter {
     remove(this.#pointsListComponent);
 
     if (resetSortType) {
-      this.#currentSortType = SortType.DEFAULT;
+      this.#currentSortType = SortType.DAY.type;
     }
   };
 

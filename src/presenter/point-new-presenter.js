@@ -1,6 +1,6 @@
 import PointFormView from '../view/point-form-view';
 import {render, remove, RenderPosition} from '../utils/render';
-import {UserAction, UpdateType} from '../utils/const';
+import {UserAction, UpdateType, ESCAPE_KEY} from '../utils/const';
 import {nanoid} from 'nanoid';
 
 export default class PointNewPresenter {
@@ -41,7 +41,7 @@ export default class PointNewPresenter {
   };
 
   #escKeyDownHandler = (evt) => {
-    if (evt.key === 'Escape') {
+    if (evt.key === ESCAPE_KEY) {
       evt.preventDefault();
       this.destroy();
     }

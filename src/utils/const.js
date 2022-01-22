@@ -1,10 +1,33 @@
 export const POINT_TYPES = ['taxi', 'bus', 'train', 'ship', 'drive', 'flight', 'check-in', 'sightseeing', 'restaurant'];
 export const DESTINATION_NAMES = ['Moscow', 'Amsterdam', 'Helsinki', 'Paris', 'Tokyo', 'Madrid', 'Rome', 'Barcelona', 'Berlin', 'New York'];
+export const ESCAPE_KEY = 'Escape';
 
 export const SortType = {
-  DEFAULT: 'default',
-  TIME: 'time',
-  PRICE: 'price',
+  DAY: {
+    type: 'day',
+    name: 'Day',
+    isDisabled: false,
+  },
+  EVENT: {
+    type: 'event',
+    name: 'Event',
+    isDisabled: true,
+  },
+  TIME: {
+    type: 'time',
+    name: 'Time',
+    isDisabled: false,
+  },
+  PRICE: {
+    type: 'price',
+    name: 'Price',
+    isDisabled: false,
+  },
+  OFFER: {
+    type: 'offer',
+    name: 'Offer',
+    isDisabled: true,
+  },
 };
 
 export const FilterType = {
