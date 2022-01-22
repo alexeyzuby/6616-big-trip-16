@@ -8,7 +8,7 @@ import flatpickr from 'flatpickr';
 
 import '../../node_modules/flatpickr/dist/flatpickr.min.css';
 
-const BLANK_TASK = {
+const BLANK_POINT = {
   id: 1,
   dateFrom: dayjs(),
   dateTo: dayjs(),
@@ -35,7 +35,7 @@ const createDestinationOptionsTemplate = (destinations) => (
 const createOffersSelectorTemplate = (id, pointOffers) => (
   `${pointOffers.offers.map((offer) => `<div class="event__offer-selector">
      <input class="event__offer-checkbox visually-hidden" id="event-offer-${offer.name}-${id}" type="checkbox" name="event-offer-${offer.name}"${offer.isChecked ?
-    ' checked' : ''}>
+    ' checked' : ''} data-offer-name="${offer.name}">
      <label class="event__offer-label" for="event-offer-${offer.name}-${id}">
        <span class="event__offer-title">${offer.title}</span>
        &plus;&euro;&nbsp;
@@ -152,7 +152,7 @@ const createPointFormTemplate = (data) => {
 export default class PointFormView extends SmartView {
   #datepicker = new Map;
 
-  constructor(point = BLANK_TASK) {
+  constructor(point = BLANK_POINT) {
     super();
     this._data = PointFormView.parsePointToData(point);
 
@@ -204,7 +204,9 @@ export default class PointFormView extends SmartView {
 
   #setInnerHandlers = () => {
     this.element.querySelector('.event__type-group').addEventListener('change', this.#typeChangeHandler);
-    this.element.querySelector('.event__input--destination').addEventListener('change', this.#destinationNameChangeHandler);
+    this.element.querySelector('.event__input--destination').addEventListener('input', this.#destinationNameChangeHandler);
+    this.element.querySelector('.event__input--price').addEventListener('input', this.#priceChangeHandler);
+    this.element.querySelector('.event__available-offers').addEventListener('change', this.#offerChangeHandler);
   };
 
   #setDatepicker = () => {
@@ -219,6 +221,7 @@ export default class PointFormView extends SmartView {
         dateFormat: 'd/m/Y H:i',
         defaultDate: this._data[dateType],
         minDate: dateType === 'dateTo' ? this._data['dateFrom'] : null,
+        maxDate: dateType === 'dateFrom' ? this._data['dateTo'] : null,
         onChange: this.#dateChangeHandler
       }));
     });
@@ -245,9 +248,34 @@ export default class PointFormView extends SmartView {
   };
 
   #destinationNameChangeHandler = (evt) => {
+    const destinationValue = evt.target.value;
+
+    if (!DESTINATION_NAMES.includes(destinationValue)) {
+      evt.target.setCustomValidity('Use only cities from the list');
+    } else {
+      this.updateData({
+        destination: generateDestination(destinationValue),
+      });
+    }
+  };
+
+  #priceChangeHandler = (evt) => {
+    evt.target.value = evt.target.value.replace(/[^\d.]/g, '');
+
     this.updateData({
-      destination: generateDestination(evt.target.value),
-    });
+      price: Number(evt.target.value),
+    }, true);
+  };
+
+  #offerChangeHandler = (evt) => {
+    const {offers} = this._data.pointOffers;
+
+    const currentOffer = offers.find((offer) => offer.name === evt.target.dataset.offerName);
+    currentOffer.isChecked = evt.target.checked;
+
+    this.updateData({
+      pointOffers: {...this._data.pointOffers, currentOffer: currentOffer}
+    }, true);
   };
 
   #formCloseHandler = (evt) => {
