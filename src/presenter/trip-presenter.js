@@ -6,7 +6,7 @@ import SortView from '../view/sort-view';
 import PointsListView from '../view/points-list-view';
 import NoPointsView from '../view/no-points-view';
 import {render, remove, RenderPosition} from '../utils/render';
-import {sortByTime, sortByPrice, sortByDate} from '../utils/point';
+import {sortByTime, sortByPrice, sortByDate} from '../utils/sort';
 import {SortType, FilterType, UserAction, UpdateType} from '../utils/const';
 import {filters} from '../utils/filters';
 
