@@ -1,16 +1,15 @@
 import AbstractView from './abstract-view';
+import {firstLetterToUpperCase} from '../utils/common';
 import {SortType} from '../utils/const';
 
-const createSortItemTemplate = (sort, currentSortType) => {
-  const {type, name, isDisabled} = sort;
+const DISABLED_SORT_TYPES = ['event', 'offer'];
 
-  return (
-    `<div class="trip-sort__item trip-sort__item--${type}">
-       <input id="sort-${type}" class="trip-sort__input visually-hidden" type="radio" name="trip-sort" value="sort-${type}" data-sort-type="${type}" ${type === currentSortType ? 'checked' : ''} ${isDisabled ? 'disabled' : ''}>
-       <label class="trip-sort__btn" for="sort-${type}">${name}</label>
+const createSortItemTemplate = (sortType, currentSortType) => (
+  `<div class="trip-sort__item trip-sort__item--${sortType}">
+       <input id="sort-${sortType}" class="trip-sort__input visually-hidden" type="radio" name="trip-sort" value="sort-${sortType}" data-sort-type="${sortType}" ${sortType === currentSortType ? 'checked' : ''} ${DISABLED_SORT_TYPES.includes(sortType) ? 'disabled' : ''}>
+       <label class="trip-sort__btn" for="sort-${sortType}">${firstLetterToUpperCase(sortType)}</label>
      </div>`
-  );
-};
+);
 
 const createSortTemplate = (currentSortType) => {
   const sortItemsTemplate = Object.values(SortType).map((sort) => createSortItemTemplate(sort, currentSortType)).join(' ');

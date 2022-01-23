@@ -3,31 +3,11 @@ export const DESTINATION_NAMES = ['Moscow', 'Amsterdam', 'Helsinki', 'Paris', 'T
 export const ESCAPE_KEY = 'Escape';
 
 export const SortType = {
-  DAY: {
-    type: 'day',
-    name: 'Day',
-    isDisabled: false,
-  },
-  EVENT: {
-    type: 'event',
-    name: 'Event',
-    isDisabled: true,
-  },
-  TIME: {
-    type: 'time',
-    name: 'Time',
-    isDisabled: false,
-  },
-  PRICE: {
-    type: 'price',
-    name: 'Price',
-    isDisabled: false,
-  },
-  OFFER: {
-    type: 'offer',
-    name: 'Offer',
-    isDisabled: true,
-  },
+  DAY: 'day',
+  EVENT: 'event',
+  TIME: 'time',
+  PRICE: 'price',
+  OFFER: 'offer',
 };
 
 export const FilterType = {
