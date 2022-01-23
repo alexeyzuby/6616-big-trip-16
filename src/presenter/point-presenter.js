@@ -1,8 +1,7 @@
 import PointView from '../view/point-view';
 import PointFormView from '../view/point-form-view';
 import {render, replace, remove, RenderPosition} from '../utils/render';
-
-const ESCAPE_KEY = 'Escape';
+import {UserAction, UpdateType, ESCAPE_KEY} from '../utils/const';
 
 const Mode = {
   DEFAULT: 'DEFAULT',
@@ -39,6 +38,7 @@ export default class PointPresenter {
     this.#pointComponent.setFavoriteClickHandler(this.#handleFavoriteClick);
     this.#pointFormComponent.setFormCloseHandler(this.#handleFormClose);
     this.#pointFormComponent.setFormSubmitHandler(this.#handleFormSubmit);
+    this.#pointFormComponent.setDeleteClickHandler(this.#handleDeleteClick);
 
     if (prevPointComponent === null || prevPointFormComponent === null) {
       render(this.#pointsListContainer, this.#pointComponent, RenderPosition.BEFOREEND);
@@ -100,11 +100,27 @@ export default class PointPresenter {
   };
 
   #handleFavoriteClick = () => {
-    this.#changeData({...this.#point, isFavorite: !this.#point.isFavorite});
+    this.#changeData(
+      UserAction.UPDATE_POINT,
+      UpdateType.PATCH,
+      {...this.#point, isFavorite: !this.#point.isFavorite}
+    );
   };
 
-  #handleFormSubmit = () => {
-    this.#pointFormComponent.reset(this.#point);
+  #handleFormSubmit = (update) => {
+    this.#changeData(
+      UserAction.UPDATE_POINT,
+      UpdateType.MINOR,
+      update,
+    );
     this.#replaceToPoint();
   };
+
+  #handleDeleteClick = (point) => {
+    this.#changeData(
+      UserAction.DELETE_POINT,
+      UpdateType.MINOR,
+      point,
+    );
+  }
 }

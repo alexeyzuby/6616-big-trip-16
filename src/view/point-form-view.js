@@ -8,17 +8,14 @@ import flatpickr from 'flatpickr';
 
 import '../../node_modules/flatpickr/dist/flatpickr.min.css';
 
-const BLANK_TASK = {
-  id: 1,
-  dateFrom: dayjs(),
-  dateTo: dayjs(),
-  type: 'train',
-  price: '',
-  destination: '',
-  pointOffers: {
-    type: 'train',
-    offers: []
-  }
+const BLANK_POINT = {
+  id: null,
+  dateFrom: dayjs().toDate(),
+  dateTo: dayjs().toDate(),
+  type: POINT_TYPES[0],
+  price: 0,
+  destination: generateDestination(),
+  pointOffers: generateOffer(POINT_TYPES[0])
 };
 
 const createTypesItemsTemplate = (id, types) => (
@@ -35,7 +32,7 @@ const createDestinationOptionsTemplate = (destinations) => (
 const createOffersSelectorTemplate = (id, pointOffers) => (
   `${pointOffers.offers.map((offer) => `<div class="event__offer-selector">
      <input class="event__offer-checkbox visually-hidden" id="event-offer-${offer.name}-${id}" type="checkbox" name="event-offer-${offer.name}"${offer.isChecked ?
-    ' checked' : ''}>
+    ' checked' : ''} data-offer-name="${offer.name}">
      <label class="event__offer-label" for="event-offer-${offer.name}-${id}">
        <span class="event__offer-title">${offer.title}</span>
        &plus;&euro;&nbsp;
@@ -85,7 +82,7 @@ const createDestinationTemplate = (destination, pictures) => {
   return '';
 };
 
-const createPointFormTemplate = (data) => {
+const createPointFormTemplate = (data, isNew) => {
   const {id, type, destination, dateFrom, dateTo, price, pointOffers} = data;
 
   const typesItems = createTypesItemsTemplate(id, POINT_TYPES);
@@ -136,9 +133,9 @@ const createPointFormTemplate = (data) => {
            </div>
            <button class="event__save-btn btn btn--blue" type="submit">Save</button>
            <button class="event__reset-btn" type="reset">Delete</button>
-           <button class="event__rollup-btn" type="button">
+           ${isNew ? '' : `<button class="event__rollup-btn" type="button">
              <span class="visually-hidden">Open event</span>
-           </button>
+           </button>`}
          </header>
          <section class="event__details">
            ${createOffersTemplate(offersSelectors)}
@@ -151,17 +148,19 @@ const createPointFormTemplate = (data) => {
 
 export default class PointFormView extends SmartView {
   #datepicker = new Map;
+  #isNew = false;
 
-  constructor(point = BLANK_TASK) {
+  constructor(point = BLANK_POINT) {
     super();
     this._data = PointFormView.parsePointToData(point);
+    this.#isNew = point === BLANK_POINT;
 
     this.#setInnerHandlers();
     this.#setDatepicker();
   }
 
   get template() {
-    return createPointFormTemplate(this._data);
+    return createPointFormTemplate(this._data, this.#isNew);
   }
 
   removeElement = () => {
@@ -182,8 +181,13 @@ export default class PointFormView extends SmartView {
   restoreHandlers = () => {
     this.#setInnerHandlers();
     this.#setDatepicker();
-    this.setFormCloseHandler(this._callback.formClose);
+
+    if(!this.#isNew) {
+      this.setFormCloseHandler(this._callback.formClose);
+    }
+
     this.setFormSubmitHandler(this._callback.formSubmit);
+    this.setDeleteClickHandler(this._callback.deleteClick);
   };
 
   setFormCloseHandler = (callback) => {
@@ -196,9 +200,19 @@ export default class PointFormView extends SmartView {
     this.element.querySelector('form').addEventListener('submit', this.#formSubmitHandler);
   };
 
+  setDeleteClickHandler = (callback) => {
+    this._callback.deleteClick = callback;
+    this.element.querySelector('.event__reset-btn').addEventListener('click', this.#formDeleteClickHandler);
+  };
+
   #setInnerHandlers = () => {
     this.element.querySelector('.event__type-group').addEventListener('change', this.#typeChangeHandler);
-    this.element.querySelector('.event__input--destination').addEventListener('change', this.#destinationNameChangeHandler);
+    this.element.querySelector('.event__input--destination').addEventListener('input', this.#destinationNameChangeHandler);
+    this.element.querySelector('.event__input--price').addEventListener('input', this.#priceChangeHandler);
+
+    if (this._data.pointOffers.offers.length > 0) {
+      this.element.querySelector('.event__available-offers').addEventListener('change', this.#offerChangeHandler);
+    }
   };
 
   #setDatepicker = () => {
@@ -213,6 +227,7 @@ export default class PointFormView extends SmartView {
         dateFormat: 'd/m/Y H:i',
         defaultDate: this._data[dateType],
         minDate: dateType === 'dateTo' ? this._data['dateFrom'] : null,
+        maxDate: dateType === 'dateFrom' ? this._data['dateTo'] : null,
         onChange: this.#dateChangeHandler
       }));
     });
@@ -239,9 +254,34 @@ export default class PointFormView extends SmartView {
   };
 
   #destinationNameChangeHandler = (evt) => {
+    const destinationValue = evt.target.value;
+
+    if (!DESTINATION_NAMES.includes(destinationValue)) {
+      evt.target.setCustomValidity('Use only cities from the list');
+    } else {
+      this.updateData({
+        destination: generateDestination(destinationValue),
+      });
+    }
+  };
+
+  #priceChangeHandler = (evt) => {
+    evt.target.value = evt.target.value.replace(/[^\d.]/g, '');
+
     this.updateData({
-      destination: generateDestination(evt.target.value),
-    });
+      price: Number(evt.target.value),
+    }, true);
+  };
+
+  #offerChangeHandler = (evt) => {
+    const newOffers = this._data.pointOffers.offers.map((offer) => ({...offer}));
+
+    const currentOffer = newOffers.find((offer) => offer.name === evt.target.dataset.offerName);
+    currentOffer.isChecked = evt.target.checked;
+
+    this.updateData({
+      pointOffers: {...this._data.pointOffers, offers: newOffers}
+    }, true);
   };
 
   #formCloseHandler = (evt) => {
@@ -252,6 +292,11 @@ export default class PointFormView extends SmartView {
   #formSubmitHandler = (evt) => {
     evt.preventDefault();
     this._callback.formSubmit(PointFormView.parseDataToPoint(this._data));
+  };
+
+  #formDeleteClickHandler = (evt) => {
+    evt.preventDefault();
+    this._callback.deleteClick(PointFormView.parseDataToPoint(this._data));
   };
 
   static parsePointToData = (point) => ({...point});

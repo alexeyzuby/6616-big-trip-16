@@ -1,4 +1,5 @@
 import AbstractView from './abstract-view';
+import he from 'he';
 import dayjs from 'dayjs';
 
 const getPointDuration = (dateFrom, dateTo) => {
@@ -45,7 +46,7 @@ const createPointTemplate = (points) => {
          <div class="event__type">
            <img class="event__type-icon" width="42" height="42" src="img/icons/${type}.png" alt="Event type icon">
          </div>
-         <h3 class="event__title">${type} ${destination.name}</h3>
+         <h3 class="event__title">${type} ${he.encode(destination.name)}</h3>
          <div class="event__schedule">
            <p class="event__time">
              <time class="event__start-time" datetime="${dayjs(dateFrom).format('YYYY-MM-DDTHH:mm')}">${dayjs(dateFrom).format('HH:mm')}</time>
@@ -88,20 +89,20 @@ export default class PointView extends AbstractView {
   setFormOpenHandler = (callback) => {
     this._callback.formOpenClick = callback;
     this.element.querySelector('.event__rollup-btn').addEventListener('click', this.#formOpenHandler);
-  }
+  };
 
   setFavoriteClickHandler = (callback) => {
     this._callback.favoriteClick = callback;
     this.element.querySelector('.event__favorite-btn').addEventListener('click', this.#favoriteClickHandler);
-  }
+  };
 
   #formOpenHandler = (evt) => {
     evt.preventDefault();
     this._callback.formOpenClick();
-  }
+  };
 
   #favoriteClickHandler = (evt) => {
     evt.preventDefault();
     this._callback.favoriteClick();
-  }
+  };
 }

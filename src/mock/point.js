@@ -2,6 +2,7 @@ import {getRandomInteger} from '../utils/common';
 import {generateDestination} from './destination';
 import {generateOffer} from './offer';
 import {POINT_TYPES} from '../utils/const';
+import {nanoid} from 'nanoid';
 import dayjs from 'dayjs';
 
 const POINT_PRICE_MIN = 10;
@@ -18,11 +19,11 @@ const generateDate = () => {
   return date;
 };
 
-export const generatePoint = (id) => {
+export const generatePoint = () => {
   const pointType = POINT_TYPES[getRandomInteger(0, POINT_TYPES.length - 1)];
 
   return {
-    id,
+    id: nanoid(),
     type: pointType,
     isFavorite: Boolean(getRandomInteger()),
     price: getRandomInteger(POINT_PRICE_MIN, POINT_PRICE_MAX),

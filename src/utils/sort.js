@@ -8,3 +8,4 @@ export const sortByTime = (pointA, pointB) => {
 };
 
 export const sortByPrice = (pointA, pointB) => pointB.price - pointA.price;
+export const sortByDate = (pointA, pointB) => dayjs(pointA.dateFrom).diff(dayjs(pointB.dateFrom));
