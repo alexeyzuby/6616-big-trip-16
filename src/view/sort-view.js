@@ -1,18 +1,16 @@
 import AbstractView from './abstract-view';
-import {firstLetterToUpperCase} from '../utils/common';
 import {SortType} from '../utils/const';
+import {firstLetterToUpperCase} from '../utils/common';
 
-const DISABLED_SORT_TYPES = ['event', 'offer'];
-
-const createSortItemTemplate = (sortType, currentSortType) => (
+const createSortItemTemplate = (sortType, currentSortType, disabledSortTypes) => (
   `<div class="trip-sort__item trip-sort__item--${sortType}">
-       <input id="sort-${sortType}" class="trip-sort__input visually-hidden" type="radio" name="trip-sort" value="sort-${sortType}" data-sort-type="${sortType}" ${sortType === currentSortType ? 'checked' : ''} ${DISABLED_SORT_TYPES.includes(sortType) ? 'disabled' : ''}>
+       <input id="sort-${sortType}" class="trip-sort__input visually-hidden" type="radio" name="trip-sort" value="sort-${sortType}" data-sort-type="${sortType}" ${sortType === currentSortType ? 'checked' : ''} ${disabledSortTypes.includes(sortType) ? 'disabled' : ''}>
        <label class="trip-sort__btn" for="sort-${sortType}">${firstLetterToUpperCase(sortType)}</label>
      </div>`
 );
 
-const createSortTemplate = (currentSortType) => {
-  const sortItemsTemplate = Object.values(SortType).map((sort) => createSortItemTemplate(sort, currentSortType)).join(' ');
+const createSortTemplate = (currentSortType, disabledSortTypes) => {
+  const sortItemsTemplate = Object.values(SortType).map((sortType) => createSortItemTemplate(sortType, currentSortType, disabledSortTypes)).join('');
 
   return (
     `<form class="trip-events__trip-sort trip-sort" action="#" method="get">
@@ -23,6 +21,7 @@ const createSortTemplate = (currentSortType) => {
 
 export default class SortView extends AbstractView {
   #currentSortType = null;
+  #disabledSortTypes = ['event', 'offer'];
 
   constructor(currentSortType) {
     super();
@@ -30,7 +29,7 @@ export default class SortView extends AbstractView {
   }
 
   get template() {
-    return createSortTemplate(this.#currentSortType);
+    return createSortTemplate(this.#currentSortType, this.#disabledSortTypes);
   }
 
   setSortTypeChangeHandler = (callback) => {
