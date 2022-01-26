@@ -1,7 +1,8 @@
 import AbstractView from './abstract-view';
-import {NAVIGATION_ACTIVE_CLASS, NavigationItem} from '../utils/const';
+import {NavigationItem} from '../utils/const';
 import {firstLetterToUpperCase} from '../utils/common';
-import {switchNavigationActive} from '../utils/navigation';
+
+const NAVIGATION_ACTIVE_CLASS = 'trip-tabs__btn--active';
 
 const createNavigationItemTemplate = (navigationItem) => (
   `<a class="trip-tabs__btn ${navigationItem === 'table' ? NAVIGATION_ACTIVE_CLASS : ''}" href="#" data-navigation-name="${navigationItem}">${firstLetterToUpperCase(navigationItem)}</a>`
@@ -30,7 +31,9 @@ export default class NavigationView extends AbstractView {
   setNavigationItem = (navigationName) => {
     const navigationItems = this.element.querySelectorAll('.trip-tabs__btn');
 
-    switchNavigationActive(navigationItems, navigationName, NAVIGATION_ACTIVE_CLASS);
+    navigationItems.forEach((item) => {
+      item.classList[item.dataset.navigationName === navigationName ? 'add' : 'remove'](NAVIGATION_ACTIVE_CLASS);
+    });
   };
 
   #navigationClickHandler = (evt) => {

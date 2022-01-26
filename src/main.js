@@ -5,9 +5,8 @@ import FiltersPresenter from './presenter/filters-presenter';
 import TripPresenter from './presenter/trip-presenter';
 import FiltersModel from './model/filters-model';
 import PointsModel from './model/points-model';
-import {NavigationItem, HeaderButton, NAVIGATION_ACTIVE_CLASS} from './utils/const';
+import {NavigationItem} from './utils/const';
 import {render, remove, RenderPosition} from './utils/render';
-import {switchNavigationActive} from './utils/navigation';
 
 const POINTS_COUNT = 5;
 
@@ -35,18 +34,7 @@ const tripPresenter = new TripPresenter(tripMain, tripEvents, pointsModel, filte
 let statsComponent = null;
 
 const handleNavigationClick = (navigationItem) => {
-  const navigationItems = tripMain.querySelectorAll('.trip-tabs__btn');
-
   switch (navigationItem) {
-    case HeaderButton.ADD_EVENT:
-      remove(statsComponent);
-      filtersPresenter.destroy();
-      filtersPresenter.init();
-      tripPresenter.destroy();
-      tripPresenter.init();
-      tripPresenter.createPoint();
-      switchNavigationActive(navigationItems, NavigationItem.TABLE, NAVIGATION_ACTIVE_CLASS);
-      break;
     case NavigationItem.TABLE:
       remove(statsComponent);
       filtersPresenter.init();
@@ -68,6 +56,11 @@ tripPresenter.init();
 
 tripAddButton.addEventListener('click', (evt) => {
   evt.preventDefault();
-
-  handleNavigationClick(HeaderButton.ADD_EVENT);
+  remove(statsComponent);
+  filtersPresenter.destroy();
+  filtersPresenter.init();
+  tripPresenter.destroy();
+  tripPresenter.init();
+  tripPresenter.createPoint();
+  navigationComponent.setNavigationItem(NavigationItem.TABLE);
 });

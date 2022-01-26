@@ -1,7 +1,6 @@
 export const POINT_TYPES = ['taxi', 'bus', 'train', 'ship', 'drive', 'flight', 'check-in', 'sightseeing', 'restaurant'];
 export const DESTINATION_NAMES = ['Moscow', 'Amsterdam', 'Helsinki', 'Paris', 'Tokyo', 'Madrid', 'Rome', 'Barcelona', 'Berlin', 'New York'];
 export const ESCAPE_KEY = 'Escape';
-export const NAVIGATION_ACTIVE_CLASS = 'trip-tabs__btn--active';
 
 export const SortType = {
   DAY: 'day',
@@ -20,10 +19,6 @@ export const FilterType = {
 export const NavigationItem = {
   TABLE: 'table',
   STATS: 'stats',
-};
-
-export const HeaderButton = {
-  'ADD_EVENT': 'add-event'
 };
 
 export const UserAction = {
