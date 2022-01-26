@@ -1,30 +1,19 @@
+import {getPointDurationByMinutes} from './duration';
 import dayjs from 'dayjs';
 
 const filterByType = (points, type) => points.filter((point) => point.type === type);
 
-export const pointsCostByType = (points, type) => {
-  const filteredPoints = filterByType(points, type);
-
-  return {
-    moneySum: filteredPoints.reduce((moneySum, point) => moneySum + point.price, 0),
-    pointType: type,
-  };
-};
-
-export const pointsQuantityByType = (points, type) => {
-  const filteredPoints = filterByType(points, type);
-
-  return {
-    typeQuantity: filteredPoints.length,
-    pointType: type,
-  };
-};
-
-export const pointsDurationByType = (points, type) => {
-  const filteredPoints = filterByType(points, type);
-
-  return {
-    pointDuration: filteredPoints.reduce((pointDuration, point) => pointDuration + dayjs(point.dateTo).diff(dayjs(point.dateFrom), 'minutes'), 0),
-    pointType: type,
-  };
+export const ChartsOptions = {
+  MONEY: {
+    setData: (points, type) => filterByType(points, type).reduce((sum, point) => sum + point.price, 0),
+    setFormatter: (val) => `€ ${val}`,
+  },
+  TYPE: {
+    setData: (points, type) => filterByType(points, type).length,
+    setFormatter: (val) => `${val}x`,
+  },
+  TIME: {
+    setData: (points, type) => filterByType(points, type).reduce((duration, point) => duration + dayjs(point.dateTo).diff(dayjs(point.dateFrom), 'minutes'), 0),
+    setFormatter: (val) => getPointDurationByMinutes(val),
+  }
 };
