@@ -25,5 +25,5 @@ export const getPointDurationByMinutes = (minutes) => {
   const hours = minutes ? Math.floor(minutes / MINUTES) : 0;
   const days = hours ? Math.floor(hours / HOURS) : 0;
 
-  return  generateDuration(days, hours, minutes);
+  return generateDuration(days, hours, minutes);
 };

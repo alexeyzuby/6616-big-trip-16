@@ -1,7 +1,7 @@
 import AbstractView from './abstract-view';
 import {getPointDurationByDiff} from '../utils/duration';
-import he from 'he';
 import dayjs from 'dayjs';
+import he from 'he';
 
 const createOffersTemplate = (pointOffers) => {
   const checkedOffers = pointOffers.offers.filter((offer) => offer.isChecked);

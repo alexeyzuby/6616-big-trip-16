@@ -1,8 +1,8 @@
 import SmartView from './smart-view';
-import Chart from 'chart.js';
-import ChartDataLabels from 'chartjs-plugin-datalabels';
 import {POINT_TYPES} from '../utils/const';
 import {ChartsOptions} from '../utils/stats';
+import Chart from 'chart.js';
+import ChartDataLabels from 'chartjs-plugin-datalabels';
 
 const BAR_HEIGHT = 55;
 
@@ -51,8 +51,8 @@ export default class StatisticsView extends SmartView {
       const chartCanvas = this.element.querySelector(`#${chartType}`);
       chartCanvas.height = BAR_HEIGHT * POINT_TYPES.length;
 
-      const chartTypeUppercase = chartType.toUpperCase();
-      const chartData = this.#getChartsData(this._data, ChartsOptions[chartTypeUppercase].setData);
+      const chartTypeUpperCase = chartType.toUpperCase();
+      const chartData = this.#getChartsData(this._data, ChartsOptions[chartTypeUpperCase].setData);
       const chartDataObjects = this.#setDataObject(this.#chartLabels, chartData);
 
       chartDataObjects.sort((dataA, dataB) => dataB.data - dataA.data);
@@ -62,7 +62,7 @@ export default class StatisticsView extends SmartView {
         sortedChartData.push(object.data);
       });
 
-      this.#charts.set(chartTypeUppercase, new Chart(chartCanvas, {
+      this.#charts.set(chartTypeUpperCase, new Chart(chartCanvas, {
         plugins: [ChartDataLabels],
         type: 'horizontalBar',
         data: {
@@ -86,12 +86,12 @@ export default class StatisticsView extends SmartView {
               color: '#000000',
               anchor: 'end',
               align: 'start',
-              formatter: ChartsOptions[chartTypeUppercase].setFormatter,
+              formatter: ChartsOptions[chartTypeUpperCase].setFormatter,
             },
           },
           title: {
             display: true,
-            text: chartTypeUppercase,
+            text: chartTypeUpperCase,
             fontColor: '#000000',
             fontSize: 23,
             position: 'left',
