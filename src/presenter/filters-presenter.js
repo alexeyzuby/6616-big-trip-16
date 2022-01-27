@@ -10,8 +10,6 @@ export default class FiltersPresenter {
   constructor(filtersContainer, filtersModel) {
     this.#filtersContainer = filtersContainer;
     this.#filtersModel = filtersModel;
-
-    this.#filtersModel.addObserver(this.#handleModelEvent);
   }
 
   get filters() {
@@ -34,6 +32,8 @@ export default class FiltersPresenter {
   init = () => {
     const filters = this.filters;
     const prevFiltersComponent = this.#filtersComponent;
+
+    this.#filtersModel.addObserver(this.#handleModelEvent);
 
     this.#filtersComponent = new FiltersView(filters, this.#filtersModel.filter);
     this.#filtersComponent.setFilterTypeChangeHandler(this.#handleFilterTypeChange);

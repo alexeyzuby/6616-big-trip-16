@@ -1,8 +1,8 @@
 import SmartView from './smart-view';
 import {generateOffer} from '../mock/offer';
 import {generateDestination} from '../mock/destination';
-import {firstLetterToUpperCase} from '../utils/common';
 import {DESTINATION_NAMES, POINT_TYPES} from '../utils/const';
+import {firstLetterToUpperCase} from '../utils/common';
 import dayjs from 'dayjs';
 import flatpickr from 'flatpickr';
 
