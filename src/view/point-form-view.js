@@ -1,7 +1,5 @@
 import SmartView from './smart-view';
-import {generateOffer} from '../mock/offer';
-import {generateDestination} from '../mock/destination';
-import {DESTINATION_NAMES, POINT_TYPES} from '../utils/const';
+import {POINT_TYPES} from '../utils/const';
 import {firstLetterToUpperCase} from '../utils/common';
 import dayjs from 'dayjs';
 import flatpickr from 'flatpickr';
@@ -9,13 +7,12 @@ import flatpickr from 'flatpickr';
 import '../../node_modules/flatpickr/dist/flatpickr.min.css';
 
 const BLANK_POINT = {
-  id: null,
   dateFrom: dayjs().toDate(),
   dateTo: dayjs().toDate(),
   type: POINT_TYPES[0],
   price: 0,
-  destination: generateDestination(),
-  pointOffers: generateOffer(POINT_TYPES[0])
+  destination: '',
+  offers: [],
 };
 
 const createTypesItemsTemplate = (id, types) => (
@@ -29,17 +26,21 @@ const createDestinationOptionsTemplate = (destinations) => (
   `${destinations.map((destination) => `<option value="${destination}"></option>`).join('')}`
 );
 
-const createOffersSelectorTemplate = (id, pointOffers) => (
-  `${pointOffers.offers.map((offer) => `<div class="event__offer-selector">
-     <input class="event__offer-checkbox visually-hidden" id="event-offer-${offer.name}-${id}" type="checkbox" name="event-offer-${offer.name}"${offer.isChecked ?
-    ' checked' : ''} data-offer-name="${offer.name}">
-     <label class="event__offer-label" for="event-offer-${offer.name}-${id}">
-       <span class="event__offer-title">${offer.title}</span>
+const createOffersSelectorTemplate = (type, pointOffers, offersList) => {
+  const currentOffers = offersList.find((offer) => offer.type === type);
+  const isChecked = (id) => pointOffers.some((pointOffer) => pointOffer.id === id);
+
+  return (
+    `${currentOffers.offers.map(({id, title, price}) => `<div class="event__offer-selector">
+     <input class="event__offer-checkbox visually-hidden" id="event-offer-${type}-${id}" type="checkbox" name="event-offer-${type}-${id}" data-offer-id="${id}" ${isChecked(id) ? 'checked' : ''}>
+     <label class="event__offer-label" for="event-offer-${type}-${id}">
+       <span class="event__offer-title">${title}</span>
        &plus;&euro;&nbsp;
-       <span class="event__offer-price">${offer.price}</span>
+       <span class="event__offer-price">${price}</span>
      </label>
    </div>`).join('')}`
-);
+  );
+};
 
 const createDestinationPicturesTemplate = (destination) => {
   if (destination) {
@@ -82,12 +83,12 @@ const createDestinationTemplate = (destination, pictures) => {
   return '';
 };
 
-const createPointFormTemplate = (data, isNew) => {
-  const {id, type, destination, dateFrom, dateTo, price, pointOffers} = data;
+const createPointFormTemplate = (data, offersList, destinationsList, isNew) => {
+  const {id, type, destination, dateFrom, dateTo, price, offers} = data;
 
   const typesItems = createTypesItemsTemplate(id, POINT_TYPES);
-  const destinationsOptions = createDestinationOptionsTemplate(DESTINATION_NAMES);
-  const offersSelectors = createOffersSelectorTemplate(id, pointOffers);
+  const destinationsOptions = createDestinationOptionsTemplate(destinationsList);
+  const offersSelectors = createOffersSelectorTemplate(type, offers, offersList);
   const destinationPictures = createDestinationPicturesTemplate(destination);
 
   const startTime = dayjs(dateFrom).format('DD/MM/YYYY HH:mm');
@@ -112,7 +113,7 @@ const createPointFormTemplate = (data, isNew) => {
            </div>
            <div class="event__field-group event__field-group--destination">
              <label class="event__label event__type-output" for="event-destination-${id}">${type}</label>
-             <input id="event-destination-${id}" class="event__input event__input--destination" type="text" name="event-destination" value="${destination ? destination.name : ''}" list="destination-list-${id}">
+             <input id="event-destination-${id}" class="event__input event__input--destination" type="text" name="event-destination" value="${destination ? destination.name : ''}" list="destination-list-${id}" required>
              <datalist id="destination-list-${id}">
                ${destinationsOptions}
              </datalist>
@@ -129,7 +130,7 @@ const createPointFormTemplate = (data, isNew) => {
                <span class="visually-hidden">Price</span>
                &euro;
              </label>
-             <input class="event__input event__input--price" id="event-price-${id}" type="text" name="event-price" value="${price}">
+             <input class="event__input event__input--price" id="event-price-${id}" type="number" name="event-price" value="${price}">
            </div>
            <button class="event__save-btn btn btn--blue" type="submit">Save</button>
            <button class="event__reset-btn" type="reset">Delete</button>
@@ -150,9 +151,13 @@ export default class PointFormView extends SmartView {
   #datepicker = new Map;
   #isNew = false;
 
-  constructor(point = BLANK_POINT) {
+  constructor(offers, destinations, point = BLANK_POINT) {
     super();
+    this._offers = offers;
+    this._destinations = destinations;
+    this._destinationsNames = this._destinations.map((destination) => destination.name);
     this._data = PointFormView.parsePointToData(point);
+
     this.#isNew = point === BLANK_POINT;
 
     this.#setInnerHandlers();
@@ -160,7 +165,7 @@ export default class PointFormView extends SmartView {
   }
 
   get template() {
-    return createPointFormTemplate(this._data, this.#isNew);
+    return createPointFormTemplate(this._data, this._offers, this._destinationsNames, this.#isNew);
   }
 
   removeElement = () => {
@@ -182,7 +187,7 @@ export default class PointFormView extends SmartView {
     this.#setInnerHandlers();
     this.#setDatepicker();
 
-    if(!this.#isNew) {
+    if (!this.#isNew) {
       this.setFormCloseHandler(this._callback.formClose);
     }
 
@@ -210,7 +215,7 @@ export default class PointFormView extends SmartView {
     this.element.querySelector('.event__input--destination').addEventListener('input', this.#destinationNameChangeHandler);
     this.element.querySelector('.event__input--price').addEventListener('input', this.#priceChangeHandler);
 
-    if (this._data.pointOffers.offers.length > 0) {
+    if (this._offers.length > 0) {
       this.element.querySelector('.event__available-offers').addEventListener('change', this.#offerChangeHandler);
     }
   };
@@ -249,39 +254,44 @@ export default class PointFormView extends SmartView {
 
     this.updateData({
       type: selectedType,
-      pointOffers: generateOffer(selectedType),
+      offers: [],
     });
   };
 
   #destinationNameChangeHandler = (evt) => {
     const destinationValue = evt.target.value;
 
-    if (!DESTINATION_NAMES.includes(destinationValue)) {
-      evt.target.setCustomValidity('Use only cities from the list');
+    if (destinationValue <= 0 || !this._destinationsNames.includes(destinationValue)) {
+      evt.target.setCustomValidity('Use cities from the list');
     } else {
+      const currentDestination = this._destinations.find((destination) => destination.name === destinationValue);
+
       this.updateData({
-        destination: generateDestination(destinationValue),
+        destination: currentDestination,
       });
     }
   };
 
   #priceChangeHandler = (evt) => {
-    evt.target.value = evt.target.value.replace(/[^\d.]/g, '');
-
     this.updateData({
       price: Number(evt.target.value),
     }, true);
   };
 
   #offerChangeHandler = (evt) => {
-    const newOffers = this._data.pointOffers.offers.map((offer) => ({...offer}));
+    const currentOfferId = Number(evt.target.dataset.offerId);
+    const currentOffers = this._offers.find((offer) => offer.type === this._data.type);
+    const selectedOffer = currentOffers.offers.find((offer) => offer.id === currentOfferId);
 
-    const currentOffer = newOffers.find((offer) => offer.name === evt.target.dataset.offerName);
-    currentOffer.isChecked = evt.target.checked;
-
-    this.updateData({
-      pointOffers: {...this._data.pointOffers, offers: newOffers}
-    }, true);
+    if (evt.target.checked) {
+      this.updateData({
+        offers: [...this._data.offers, selectedOffer]
+      }, true);
+    } else {
+      this.updateData({
+        offers: [...this._data.offers.filter((offer) => offer.id !== selectedOffer.id)]
+      }, true);
+    }
   };
 
   #formCloseHandler = (evt) => {
