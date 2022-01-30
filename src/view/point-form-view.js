@@ -288,12 +288,16 @@ export default class PointFormView extends SmartView {
         offers: [...this._data.offers, selectedOffer]
       }, true);
     } else {
-      const selectedOfferIndex = this._data.offers.findIndex((offer) => offer.id === selectedOffer.id);
+      const index = this._data.offers.findIndex((offer) => offer.id === selectedOffer.id);
+
+      if (index === -1) {
+        throw new Error('Can\'t update unexisting offer');
+      }
 
       this.updateData({
         offers: [
-          ...this._data.offers.slice(0, selectedOfferIndex),
-          ...this._data.offers.slice(selectedOfferIndex + 1),
+          ...this._data.offers.slice(0, index),
+          ...this._data.offers.slice(index + 1),
         ],
       }, true);
     }
