@@ -211,12 +211,14 @@ export default class PointFormView extends SmartView {
   };
 
   #setInnerHandlers = () => {
+    const offersTemplate = this.element.querySelector('.event__available-offers');
+
     this.element.querySelector('.event__type-group').addEventListener('change', this.#typeChangeHandler);
     this.element.querySelector('.event__input--destination').addEventListener('input', this.#destinationNameChangeHandler);
     this.element.querySelector('.event__input--price').addEventListener('input', this.#priceChangeHandler);
 
-    if (this._data.offers.length > 0) {
-      this.element.querySelector('.event__available-offers').addEventListener('change', this.#offerChangeHandler);
+    if (offersTemplate) {
+      offersTemplate.addEventListener('change', this.#offerChangeHandler);
     }
   };
 
