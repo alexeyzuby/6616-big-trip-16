@@ -215,7 +215,7 @@ export default class PointFormView extends SmartView {
     this.element.querySelector('.event__input--destination').addEventListener('input', this.#destinationNameChangeHandler);
     this.element.querySelector('.event__input--price').addEventListener('input', this.#priceChangeHandler);
 
-    if (this._offers.length > 0) {
+    if (this._data.offers.length > 0) {
       this.element.querySelector('.event__available-offers').addEventListener('change', this.#offerChangeHandler);
     }
   };
