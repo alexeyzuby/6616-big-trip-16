@@ -288,8 +288,13 @@ export default class PointFormView extends SmartView {
         offers: [...this._data.offers, selectedOffer]
       }, true);
     } else {
+      const selectedOfferIndex = this._data.offers.findIndex((offer) => offer.id === selectedOffer.id);
+
       this.updateData({
-        offers: [...this._data.offers.filter((offer) => offer.id !== selectedOffer.id)]
+        offers: [
+          ...this._data.offers.slice(0, selectedOfferIndex),
+          ...this._data.offers.slice(selectedOfferIndex + 1),
+        ],
       }, true);
     }
   };
