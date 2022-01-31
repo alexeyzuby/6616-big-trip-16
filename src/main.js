@@ -1,4 +1,4 @@
-import ApiService from './api-service.js';
+import ApiService from './api-service';
 import NavigationView from './view/navigation-view';
 import StatsView from './view/stats-view';
 import FiltersPresenter from './presenter/filters-presenter';

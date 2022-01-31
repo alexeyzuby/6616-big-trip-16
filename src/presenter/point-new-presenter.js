@@ -1,7 +1,6 @@
 import PointFormView from '../view/point-form-view';
 import {render, remove, RenderPosition} from '../utils/render';
 import {UserAction, UpdateType, ESCAPE_KEY} from '../utils/const';
-import {nanoid} from 'nanoid';
 
 export default class PointNewPresenter {
   #pointsListContainer = null;
@@ -40,6 +39,25 @@ export default class PointNewPresenter {
     document.removeEventListener('keydown', this.#escKeyDownHandler);
   };
 
+  setSaving = () => {
+    this.#pointFormComponent.updateData({
+      isDisabled: true,
+      isSaving: true,
+    });
+  };
+
+  setAborting = () => {
+    const resetFormState = () => {
+      this.#pointFormComponent.updateData({
+        isDisabled: false,
+        isSaving: false,
+        isDeleting: false,
+      });
+    };
+
+    this.#pointFormComponent.shake(resetFormState);
+  };
+
   #escKeyDownHandler = (evt) => {
     if (evt.key === ESCAPE_KEY) {
       evt.preventDefault();
@@ -51,9 +69,8 @@ export default class PointNewPresenter {
     this.#changeData(
       UserAction.ADD_POINT,
       UpdateType.MINOR,
-      {...point, id: nanoid()},
+      point
     );
-    this.destroy();
   };
 
   #handleDeleteClick = () => {

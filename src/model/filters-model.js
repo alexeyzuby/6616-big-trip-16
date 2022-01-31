@@ -1,5 +1,5 @@
-import AbstractObservable from '../utils/abstract-observable.js';
-import {FilterType} from '../utils/const.js';
+import AbstractObservable from '../utils/abstract-observable';
+import {FilterType} from '../utils/const';
 
 export default class FiltersModel extends AbstractObservable {
   #filter = FilterType.EVERYTHING;

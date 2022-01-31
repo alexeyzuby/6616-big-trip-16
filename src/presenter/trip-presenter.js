@@ -1,10 +1,10 @@
-import PointPresenter from './point-presenter';
+import PointPresenter, {State as PointPresenterViewState} from './point-presenter';
 import PointNewPresenter from './point-new-presenter';
 import TripInfoView from '../view/trip-info-view';
 import SortView from '../view/sort-view';
 import PointsListView from '../view/points-list-view';
 import NoPointsView from '../view/no-points-view';
-import LoadingView from '../view/loading-view.js';
+import LoadingView from '../view/loading-view';
 import {render, remove, RenderPosition} from '../utils/render';
 import {SortType, FilterType, UserAction, UpdateType} from '../utils/const';
 import {sortByTime, sortByPrice, sortByDate} from '../utils/sort';
@@ -86,16 +86,31 @@ export default class TripPresenter {
     this.#pointNewPresenter.init(this.offers, this.destinations);
   };
 
-  #handleViewAction = (actionType, updateType, update) => {
+  #handleViewAction = async (actionType, updateType, update) => {
     switch (actionType) {
       case UserAction.UPDATE_POINT:
-        this.#pointsModel.updatePoint(updateType, update);
+        this.#pointPresenter.get(update.id).setViewState(PointPresenterViewState.SAVING);
+        try {
+          await this.#pointsModel.updatePoint(updateType, update);
+        } catch (err) {
+          this.#pointPresenter.get(update.id).setViewState(PointPresenterViewState.ABORTING);
+        }
         break;
       case UserAction.ADD_POINT:
-        this.#pointsModel.addPoint(updateType, update);
+        this.#pointNewPresenter.setSaving();
+        try {
+          await this.#pointsModel.addPoint(updateType, update);
+        } catch (err) {
+          this.#pointNewPresenter.setAborting();
+        }
         break;
       case UserAction.DELETE_POINT:
-        this.#pointsModel.deletePoint(updateType, update);
+        this.#pointPresenter.get(update.id).setViewState(PointPresenterViewState.DELETING);
+        try {
+          await this.#pointsModel.deletePoint(updateType, update);
+        } catch (err) {
+          this.#pointPresenter.get(update.id).setViewState(PointPresenterViewState.ABORTING);
+        }
         break;
     }
   };
