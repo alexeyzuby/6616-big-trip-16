@@ -3,25 +3,21 @@ import {getPointDurationByDiff} from '../utils/duration';
 import dayjs from 'dayjs';
 import he from 'he';
 
-const createOffersTemplate = (pointOffers) => {
-  const checkedOffers = pointOffers.offers.filter((offer) => offer.isChecked);
-
-  return (
-    `${checkedOffers.length ? `<ul class="event__selected-offers">
-        ${checkedOffers.map((offer) => `<li class="event__offer">
+const createOffersTemplate = (offers) => (
+  `${offers.length ? `<ul class="event__selected-offers">
+        ${offers.map((offer) => `<li class="event__offer">
          <span class="event__offer-title">${offer.title}</span>
          &plus;&euro;&nbsp;
          <span class="event__offer-price">${offer.price}</span>
        </li>`).join('')}
       </ul>` : ''}`
-  );
-};
+);
 
 const createPointTemplate = (points) => {
-  const {dateFrom, dateTo, type, price, destination, pointOffers, isFavorite} = points;
+  const {dateFrom, dateTo, type, price, destination, offers, isFavorite} = points;
 
   const pointDuration = getPointDurationByDiff(dateFrom, dateTo);
-  const selectedOffers = createOffersTemplate(pointOffers);
+  const selectedOffers = createOffersTemplate(offers);
 
   return (
     `<li class="trip-events__item">

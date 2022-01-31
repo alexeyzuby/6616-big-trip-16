@@ -15,12 +15,12 @@ export default class PointNewPresenter {
     this.#onDeleteClick = onDeleteClick;
   }
 
-  init = () => {
+  init = (offers, destinations) => {
     if (this.#pointFormComponent !== null) {
       return;
     }
 
-    this.#pointFormComponent = new PointFormView();
+    this.#pointFormComponent = new PointFormView(offers, destinations);
     this.#pointFormComponent.setFormSubmitHandler(this.#handleFormSubmit);
     this.#pointFormComponent.setDeleteClickHandler(this.#handleDeleteClick);
 

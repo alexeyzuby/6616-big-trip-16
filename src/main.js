@@ -1,4 +1,4 @@
-import {generatePoint} from './mock/point';
+import ApiService from './api-service.js';
 import NavigationView from './view/navigation-view';
 import StatsView from './view/stats-view';
 import FiltersPresenter from './presenter/filters-presenter';
@@ -8,14 +8,11 @@ import PointsModel from './model/points-model';
 import {NavigationItem} from './utils/const';
 import {render, remove, RenderPosition} from './utils/render';
 
-const POINTS_COUNT = 5;
-
-const points = [...Array(POINTS_COUNT)].map(() => generatePoint());
+const AUTHORIZATION = 'Basic fwcw34ewfjk22';
+const END_POINT = 'https://16.ecmascript.pages.academy/big-trip';
 
 const filtersModel = new FiltersModel();
-const pointsModel = new PointsModel();
-
-pointsModel.points = points;
+const pointsModel = new PointsModel(new ApiService(END_POINT, AUTHORIZATION));
 
 const pageMain = document.querySelector('.page-main');
 const tripMain = document.querySelector('.trip-main');
@@ -54,13 +51,15 @@ navigationComponent.setNavigationClickHandler(handleNavigationClick);
 filtersPresenter.init();
 tripPresenter.init();
 
-tripAddButton.addEventListener('click', (evt) => {
-  evt.preventDefault();
-  remove(statsComponent);
-  filtersPresenter.destroy();
-  filtersPresenter.init();
-  tripPresenter.destroy();
-  tripPresenter.init();
-  tripPresenter.createPoint();
-  navigationComponent.setNavigationItem(NavigationItem.TABLE);
+pointsModel.init().finally(() => {
+  tripAddButton.addEventListener('click', (evt) => {
+    evt.preventDefault();
+    remove(statsComponent);
+    filtersPresenter.destroy();
+    filtersPresenter.init();
+    tripPresenter.destroy();
+    tripPresenter.init();
+    tripPresenter.createPoint();
+    navigationComponent.setNavigationItem(NavigationItem.TABLE);
+  });
 });

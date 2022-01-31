@@ -73,7 +73,7 @@ export default class StatisticsView extends SmartView {
             hoverBackgroundColor: '#ffffff',
             anchor: 'start',
             barThickness: 44,
-            minBarLength: 50,
+            minBarLength: 80,
           }],
         },
         options: {
