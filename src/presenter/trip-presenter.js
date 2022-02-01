@@ -1,6 +1,5 @@
 import PointPresenter, {State as PointPresenterViewState} from './point-presenter';
 import PointNewPresenter from './point-new-presenter';
-import TripInfoView from '../view/trip-info-view';
 import SortView from '../view/sort-view';
 import PointsListView from '../view/points-list-view';
 import NoPointsView from '../view/no-points-view';
@@ -11,14 +10,12 @@ import {sortByTime, sortByPrice, sortByDate} from '../utils/sort';
 import {filters} from '../utils/filters';
 
 export default class TripPresenter {
-  #tripMainContainer = null;
   #pointsListContainer = null;
   #noPointsComponent = null;
   #sortComponent = null;
   #pointsModel = null;
   #filtersModel = null;
 
-  #tripInfoComponent = new TripInfoView();
   #pointsListComponent = new PointsListView();
   #loadingComponent = new LoadingView();
 
@@ -28,8 +25,7 @@ export default class TripPresenter {
   #filterType = FilterType.EVERYTHING;
   #isLoading = true;
 
-  constructor(tripMainContainer, pointsListContainer, pointsModel, filtersModel) {
-    this.#tripMainContainer = tripMainContainer;
+  constructor(pointsListContainer, pointsModel, filtersModel) {
     this.#pointsListContainer = pointsListContainer;
     this.#pointsModel = pointsModel;
     this.#filtersModel = filtersModel;
@@ -161,10 +157,6 @@ export default class TripPresenter {
     }
   };
 
-  #renderTripInfo = () => {
-    render(this.#tripMainContainer, this.#tripInfoComponent, RenderPosition.AFTERBEGIN);
-  };
-
   #renderSort = () => {
     this.#sortComponent = new SortView(this.#currentSortType);
     this.#sortComponent.setSortTypeChangeHandler(this.#handleSortTypeChange);
@@ -226,7 +218,6 @@ export default class TripPresenter {
       return;
     }
 
-    this.#renderTripInfo();
     this.#renderSort();
     this.#renderPointsList();
     this.#renderPoints();

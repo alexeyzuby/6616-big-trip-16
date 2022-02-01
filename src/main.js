@@ -1,6 +1,7 @@
 import ApiService from './api-service';
 import NavigationView from './view/navigation-view';
 import StatsView from './view/stats-view';
+import TripInfoPresenter from './presenter/trip-info-presenter';
 import FiltersPresenter from './presenter/filters-presenter';
 import TripPresenter from './presenter/trip-presenter';
 import FiltersModel from './model/filters-model';
@@ -25,8 +26,9 @@ const navigationComponent = new NavigationView();
 
 render(tripNavigation, navigationComponent, RenderPosition.BEFOREEND);
 
+const tripInfoPresenter = new TripInfoPresenter(tripMain, pointsModel);
 const filtersPresenter = new FiltersPresenter(tripFilters, filtersModel);
-const tripPresenter = new TripPresenter(tripMain, tripEvents, pointsModel, filtersModel);
+const tripPresenter = new TripPresenter(tripEvents, pointsModel, filtersModel);
 
 let statsComponent = null;
 
@@ -48,6 +50,7 @@ const handleNavigationClick = (navigationItem) => {
 
 navigationComponent.setNavigationClickHandler(handleNavigationClick);
 
+tripInfoPresenter.init();
 filtersPresenter.init();
 tripPresenter.init();
 
