@@ -9,7 +9,7 @@ const getTripDestinations = (destinations, startPoint, endPoint) => {
     );
   }
 
-  return `${destinations.join(' - ')}`;
+  return `${destinations.join(' &mdash; ')}`;
 };
 
 const getTripDate = (date) => dayjs(date).format('MMM DD');

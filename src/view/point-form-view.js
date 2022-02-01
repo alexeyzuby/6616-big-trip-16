@@ -15,6 +15,8 @@ const BLANK_POINT = {
   offers: [],
 };
 
+const checkDateFromDiff = (start, end) => dayjs(start).diff(dayjs(end)) < 0;
+
 const createTypesItemsTemplate = (id, types, isDisabled) => (
   `${types.map((type) => `<div class="event__type-item">
      <input id="event-type-${type}-${id}" class="event__type-input visually-hidden" type="radio" name="event-type" value="${type}" ${isDisabled ? 'disabled' : ''}>
@@ -234,7 +236,6 @@ export default class PointFormView extends SmartView {
         dateFormat: 'd/m/Y H:i',
         defaultDate: this._data[dateType],
         minDate: dateType === 'dateTo' ? this._data['dateFrom'] : null,
-        maxDate: dateType === 'dateFrom' ? this._data['dateTo'] : null,
         onChange: this.#dateChangeHandler
       }));
     });
@@ -244,6 +245,12 @@ export default class PointFormView extends SmartView {
     this.updateData({
       [instance.element.dataset.dateType]: userDate,
     });
+
+    if(instance.element.dataset.dateType === 'dateFrom' && !checkDateFromDiff(userDate, this._data['dateTo'])) {
+      this.updateData({
+        ['dateTo']: userDate,
+      });
+    }
   };
 
   #typeChangeHandler = (evt) => {
