@@ -1,6 +1,8 @@
 import ApiService from './api-service';
+import NewPointButtonView from './view/new-point-button-view';
 import NavigationView from './view/navigation-view';
 import StatsView from './view/stats-view';
+import TripInfoPresenter from './presenter/trip-info-presenter';
 import FiltersPresenter from './presenter/filters-presenter';
 import TripPresenter from './presenter/trip-presenter';
 import FiltersModel from './model/filters-model';
@@ -20,13 +22,16 @@ const tripEvents = document.querySelector('.trip-events');
 const pageContainer = pageMain.querySelector('.page-body__container');
 const tripNavigation = tripMain.querySelector('.trip-controls__navigation');
 const tripFilters = tripMain.querySelector('.trip-controls__filters');
-const tripAddButton = tripMain.querySelector('.trip-main__event-add-btn');
+
+const newPointButtonComponent = new NewPointButtonView();
 const navigationComponent = new NavigationView();
 
+render(tripMain, newPointButtonComponent, RenderPosition.BEFOREEND);
 render(tripNavigation, navigationComponent, RenderPosition.BEFOREEND);
 
-const filtersPresenter = new FiltersPresenter(tripFilters, filtersModel);
-const tripPresenter = new TripPresenter(tripMain, tripEvents, pointsModel, filtersModel);
+const tripInfoPresenter = new TripInfoPresenter(tripMain, pointsModel);
+const filtersPresenter = new FiltersPresenter(tripFilters, pointsModel, filtersModel);
+const tripPresenter = new TripPresenter(tripEvents, newPointButtonComponent, pointsModel, filtersModel);
 
 let statsComponent = null;
 
@@ -36,6 +41,7 @@ const handleNavigationClick = (navigationItem) => {
       remove(statsComponent);
       filtersPresenter.init();
       tripPresenter.init();
+      newPointButtonComponent.enableButton();
       break;
     case NavigationItem.STATS:
       filtersPresenter.destroy();
@@ -46,20 +52,22 @@ const handleNavigationClick = (navigationItem) => {
   }
 };
 
+const handleNewButtonClick = () => {
+  remove(statsComponent);
+  filtersPresenter.destroy();
+  filtersPresenter.init();
+  tripPresenter.destroy();
+  tripPresenter.init();
+  tripPresenter.createPoint();
+  navigationComponent.setNavigationItem(NavigationItem.TABLE);
+};
+
 navigationComponent.setNavigationClickHandler(handleNavigationClick);
 
-filtersPresenter.init();
+tripInfoPresenter.init();
 tripPresenter.init();
 
 pointsModel.init().finally(() => {
-  tripAddButton.addEventListener('click', (evt) => {
-    evt.preventDefault();
-    remove(statsComponent);
-    filtersPresenter.destroy();
-    filtersPresenter.init();
-    tripPresenter.destroy();
-    tripPresenter.init();
-    tripPresenter.createPoint();
-    navigationComponent.setNavigationItem(NavigationItem.TABLE);
-  });
+  filtersPresenter.init();
+  newPointButtonComponent.setNewButtonClickHandler(handleNewButtonClick);
 });

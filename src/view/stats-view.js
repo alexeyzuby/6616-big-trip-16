@@ -1,4 +1,4 @@
-import SmartView from './smart-view';
+import AbstractView from './abstract-view';
 import {POINT_TYPES} from '../utils/const';
 import {ChartsOptions} from '../utils/stats';
 import Chart from 'chart.js';
@@ -23,7 +23,7 @@ const createStatsTemplate = (chartTypes) => {
   );
 };
 
-export default class StatisticsView extends SmartView {
+export default class StatisticsView extends AbstractView {
   #chartTypes = ['money', 'type', 'time'];
   #charts = new Map();
   #chartLabels = null;

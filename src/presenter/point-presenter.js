@@ -65,35 +65,37 @@ export default class PointPresenter {
   };
 
   setViewState = (state) => {
-    if (this.#mode === Mode.DEFAULT) {
-      return;
-    }
-
-    const resetFormState = () => {
-      this.#pointFormComponent.updateData({
-        isDisabled: false,
-        isSaving: false,
-        isDeleting: false,
+    if (this.#mode === Mode.DEFAULT && state === State.SAVING) {
+      this.#pointComponent.updateData({
+        isDisabled: true,
       });
-    };
+    } else {
+      const resetFormState = () => {
+        this.#pointFormComponent.updateData({
+          isDisabled: false,
+          isSaving: false,
+          isDeleting: false,
+        });
+      };
 
-    switch (state) {
-      case State.SAVING:
-        this.#pointFormComponent.updateData({
-          isDisabled: true,
-          isSaving: true,
-        });
-        break;
-      case State.DELETING:
-        this.#pointFormComponent.updateData({
-          isDisabled: true,
-          isDeleting: true,
-        });
-        break;
-      case State.ABORTING:
-        this.#pointComponent.shake(resetFormState);
-        this.#pointFormComponent.shake(resetFormState);
-        break;
+      switch (state) {
+        case State.SAVING:
+          this.#pointFormComponent.updateData({
+            isDisabled: true,
+            isSaving: true,
+          });
+          break;
+        case State.DELETING:
+          this.#pointFormComponent.updateData({
+            isDisabled: true,
+            isDeleting: true,
+          });
+          break;
+        case State.ABORTING:
+          this.#pointComponent.shake(resetFormState);
+          this.#pointFormComponent.shake(resetFormState);
+          break;
+      }
     }
   };
 

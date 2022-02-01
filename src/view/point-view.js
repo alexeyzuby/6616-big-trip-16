@@ -1,4 +1,4 @@
-import AbstractView from './abstract-view';
+import SmartView from './smart-view';
 import {getPointDurationByDiff} from '../utils/duration';
 import dayjs from 'dayjs';
 import he from 'he';
@@ -14,7 +14,7 @@ const createOffersTemplate = (offers) => (
 );
 
 const createPointTemplate = (points) => {
-  const {dateFrom, dateTo, type, price, destination, offers, isFavorite} = points;
+  const {dateFrom, dateTo, type, price, destination, offers, isFavorite, isDisabled} = points;
 
   const pointDuration = getPointDurationByDiff(dateFrom, dateTo);
   const selectedOffers = createOffersTemplate(offers);
@@ -46,7 +46,7 @@ const createPointTemplate = (points) => {
              <path d="M14 21l-8.22899 4.3262 1.57159-9.1631L.685209 9.67376 9.8855 8.33688 14 0l4.1145 8.33688 9.2003 1.33688-6.6574 6.48934 1.5716 9.1631L14 21z"/>
            </svg>
          </button>
-         <button class="event__rollup-btn" type="button">
+         <button class="event__rollup-btn" type="button" ${isDisabled ? 'disabled' : ''}>
            <span class="visually-hidden">Open event</span>
          </button>
        </div>
@@ -54,17 +54,20 @@ const createPointTemplate = (points) => {
   );
 };
 
-export default class PointView extends AbstractView {
-  #point = null;
-
+export default class PointView extends SmartView {
   constructor(point) {
     super();
-    this.#point = point;
+    this._data = PointView.parsePointToData(point);
   }
 
   get template() {
-    return createPointTemplate(this.#point);
+    return createPointTemplate(this._data);
   }
+
+  restoreHandlers = () => {
+    this.setFormOpenHandler(this._callback.formOpenClick);
+    this.setFavoriteClickHandler(this._callback.favoriteClick);
+  };
 
   setFormOpenHandler = (callback) => {
     this._callback.formOpenClick = callback;
@@ -85,4 +88,9 @@ export default class PointView extends AbstractView {
     evt.preventDefault();
     this._callback.favoriteClick();
   };
+
+  static parsePointToData = (point) => ({
+    ...point,
+    isDisabled: false,
+  });
 }

@@ -4,12 +4,14 @@ import {UserAction, UpdateType, ESCAPE_KEY} from '../utils/const';
 
 export default class PointNewPresenter {
   #pointsListContainer = null;
+  #newPointButtonComponent = null;
   #changeData = null;
   #onDeleteClick = null;
   #pointFormComponent = null;
 
-  constructor(pointsListContainer, changeData, onDeleteClick) {
+  constructor(pointsListContainer, newPointButtonComponent, changeData, onDeleteClick) {
     this.#pointsListContainer = pointsListContainer;
+    this.#newPointButtonComponent = newPointButtonComponent;
     this.#changeData = changeData;
     this.#onDeleteClick = onDeleteClick;
   }
@@ -35,6 +37,7 @@ export default class PointNewPresenter {
 
     remove(this.#pointFormComponent);
     this.#pointFormComponent = null;
+    this.#newPointButtonComponent.enableButton();
 
     document.removeEventListener('keydown', this.#escKeyDownHandler);
   };
