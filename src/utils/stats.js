@@ -15,5 +15,5 @@ export const ChartsOptions = {
   TIME: {
     setData: (points, type) => filterByType(points, type).reduce((duration, point) => duration + dayjs(point.dateTo).diff(dayjs(point.dateFrom), 'minutes'), 0),
     setFormatter: (val) => getPointDurationByMinutes(val),
-  }
+  },
 };
