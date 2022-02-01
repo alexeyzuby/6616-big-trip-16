@@ -1,6 +1,6 @@
 import {FilterType} from './const';
 
-export const filters = {
+export const Filters = {
   [FilterType.EVERYTHING]: (points) => points,
   [FilterType.FUTURE]: (points) => points.filter((point) => Date.parse(point.dateFrom) >= Date.now()),
   [FilterType.PAST]: (points) => points.filter((point) => Date.parse(point.dateTo) < Date.now()),

@@ -7,7 +7,7 @@ import LoadingView from '../view/loading-view';
 import {render, remove, RenderPosition} from '../utils/render';
 import {SortType, FilterType, UserAction, UpdateType} from '../utils/const';
 import {sortByTime, sortByPrice, sortByDate} from '../utils/sort';
-import {filters} from '../utils/filters';
+import {Filters} from '../utils/filters';
 
 export default class TripPresenter {
   #pointsListContainer = null;
@@ -25,18 +25,18 @@ export default class TripPresenter {
   #filterType = FilterType.EVERYTHING;
   #isLoading = true;
 
-  constructor(pointsListContainer, pointsModel, filtersModel) {
+  constructor(pointsListContainer, newPointButtonComponent, pointsModel, filtersModel) {
     this.#pointsListContainer = pointsListContainer;
     this.#pointsModel = pointsModel;
     this.#filtersModel = filtersModel;
 
-    this.#pointNewPresenter = new PointNewPresenter(this.#pointsListComponent, this.#handleViewAction, this.#handleNewPointDeleteClick);
+    this.#pointNewPresenter = new PointNewPresenter(this.#pointsListComponent, newPointButtonComponent, this.#handleViewAction, this.#handleNewPointDeleteClick);
   }
 
   get points() {
     this.#filterType = this.#filtersModel.filter;
     const points = this.#pointsModel.points;
-    const filteredPoints = filters[this.#filterType](points);
+    const filteredPoints = Filters[this.#filterType](points);
 
     switch (this.#currentSortType) {
       case SortType.TIME:

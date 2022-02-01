@@ -17,6 +17,7 @@ export default class TripInfoPresenter {
     this.#pointsModel.addObserver(this.#handleModelEvent);
 
     if (pointsLength === 0) {
+      remove(this.#tripInfoComponent);
       return;
     }
 

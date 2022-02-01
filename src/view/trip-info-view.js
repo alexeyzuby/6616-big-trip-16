@@ -1,4 +1,5 @@
 import AbstractView from './abstract-view';
+import {sortByDate} from '../utils/sort';
 import dayjs from 'dayjs';
 
 const getTripDestinations = (destinations, startPoint, endPoint) => {
@@ -19,9 +20,10 @@ const createTripInfoTemplate = (points) => {
     return '';
   }
 
-  const destinations = points.map((point) => point.destination.name);
-  const startPoint = points.map((point) => point).sort((a, b) => a.dateFrom - b.dateFrom)[0];
-  const endPoint = points.map((point) => point).sort((a, b) => b.dateTo - a.dateTo)[0];
+  const sortedPoints = points.sort(sortByDate);
+  const destinations = sortedPoints.map((point) => point.destination.name);
+  const startPoint = sortedPoints.map((point) => point).sort((a, b) => a.dateFrom - b.dateFrom)[0];
+  const endPoint = sortedPoints.map((point) => point).sort((a, b) => b.dateTo - a.dateTo)[0];
 
   return (
     `<section class="trip-main__trip-info trip-info">
