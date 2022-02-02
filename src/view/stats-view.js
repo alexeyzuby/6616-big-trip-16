@@ -23,7 +23,7 @@ const createStatsTemplate = (chartTypes) => {
   );
 };
 
-export default class StatisticsView extends AbstractView {
+export default class StatsView extends AbstractView {
   #chartTypes = ['money', 'type', 'time'];
   #charts = new Map();
   #chartLabels = null;

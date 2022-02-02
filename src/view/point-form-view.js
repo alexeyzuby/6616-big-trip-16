@@ -1,6 +1,6 @@
 import SmartView from './smart-view';
 import {POINT_TYPES} from '../utils/const';
-import {firstLetterToUpperCase} from '../utils/common';
+import {convertFirstLetterToUpperCase} from '../utils/common';
 import dayjs from 'dayjs';
 import flatpickr from 'flatpickr';
 
@@ -20,7 +20,7 @@ const checkDateFromDiff = (start, end) => dayjs(start).diff(dayjs(end)) < 0;
 const createTypesItemsTemplate = (id, types, isDisabled) => (
   `${types.map((type) => `<div class="event__type-item">
      <input id="event-type-${type}-${id}" class="event__type-input visually-hidden" type="radio" name="event-type" value="${type}" ${isDisabled ? 'disabled' : ''}>
-     <label class="event__type-label event__type-label--${type}" for="event-type-${type}-${id}">${firstLetterToUpperCase(type)}</label>
+     <label class="event__type-label event__type-label--${type}" for="event-type-${type}-${id}">${convertFirstLetterToUpperCase(type)}</label>
    </div>`).join('')}`
 );
 

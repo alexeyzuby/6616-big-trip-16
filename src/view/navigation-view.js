@@ -1,11 +1,11 @@
 import AbstractView from './abstract-view';
 import {NavigationItem} from '../utils/const';
-import {firstLetterToUpperCase} from '../utils/common';
+import {convertFirstLetterToUpperCase} from '../utils/common';
 
 const NAVIGATION_ACTIVE_CLASS = 'trip-tabs__btn--active';
 
 const createNavigationItemTemplate = (navigationItem) => (
-  `<a class="trip-tabs__btn ${navigationItem === 'table' ? NAVIGATION_ACTIVE_CLASS : ''}" href="#" data-navigation-name="${navigationItem}">${firstLetterToUpperCase(navigationItem)}</a>`
+  `<a class="trip-tabs__btn ${navigationItem === 'table' ? NAVIGATION_ACTIVE_CLASS : ''}" href="#" data-navigation-name="${navigationItem}">${convertFirstLetterToUpperCase(navigationItem)}</a>`
 );
 
 const createNavigationTemplate = () => {

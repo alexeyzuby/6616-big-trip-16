@@ -1,11 +1,11 @@
 import AbstractView from './abstract-view';
 import {SortType} from '../utils/const';
-import {firstLetterToUpperCase} from '../utils/common';
+import {convertFirstLetterToUpperCase} from '../utils/common';
 
 const createSortItemTemplate = (sortType, currentSortType, disabledSortTypes) => (
   `<div class="trip-sort__item trip-sort__item--${sortType}">
        <input id="sort-${sortType}" class="trip-sort__input visually-hidden" type="radio" name="trip-sort" value="sort-${sortType}" data-sort-type="${sortType}" ${sortType === currentSortType ? 'checked' : ''} ${disabledSortTypes.includes(sortType) ? 'disabled' : ''}>
-       <label class="trip-sort__btn" for="sort-${sortType}">${firstLetterToUpperCase(sortType)}</label>
+       <label class="trip-sort__btn" for="sort-${sortType}">${convertFirstLetterToUpperCase(sortType)}</label>
      </div>`
 );
 
